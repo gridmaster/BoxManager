@@ -1,0 +1,10 @@
+D:\Projects\BoxManager\BoxHost\bin\Debug\BoxHost.exe.config
+D:\Projects\BoxManager\BoxHost\bin\Debug\BoxHost.exe
+D:\Projects\BoxManager\BoxHost\bin\Debug\BoxHost.pdb
+D:\Projects\BoxManager\BoxHost\bin\Debug\BoxManager.dll
+D:\Projects\BoxManager\BoxHost\bin\Debug\BoxManager.pdb
+D:\Projects\BoxManager\BoxHost\obj\Debug\BoxHost.csprojResolveAssemblyReference.cache
+D:\Projects\BoxManager\BoxHost\obj\Debug\BoxHost.exe
+D:\Projects\BoxManager\BoxHost\obj\Debug\BoxHost.pdb
+D:\Projects\BoxManager\BoxHost\bin\Debug\Newtonsoft.Json.dll
+D:\Projects\BoxManager\BoxHost\bin\Debug\Newtonsoft.Json.xml

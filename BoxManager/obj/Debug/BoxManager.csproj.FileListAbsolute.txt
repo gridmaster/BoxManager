@@ -1,0 +1,7 @@
+D:\Projects\BoxManager\BoxManager\bin\BoxManager.dll
+D:\Projects\BoxManager\BoxManager\bin\BoxManager.pdb
+D:\Projects\BoxManager\BoxManager\bin\Newtonsoft.Json.dll
+D:\Projects\BoxManager\BoxManager\bin\Newtonsoft.Json.xml
+D:\Projects\BoxManager\BoxManager\obj\Debug\BoxManager.dll
+D:\Projects\BoxManager\BoxManager\obj\Debug\BoxManager.pdb
+D:\Projects\BoxManager\BoxManager\obj\Debug\BoxManager.csprojResolveAssemblyReference.cache
