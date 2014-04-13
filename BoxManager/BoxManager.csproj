@@ -39,8 +39,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Activation" />
@@ -69,9 +70,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoxModels\BassFolder.cs" />
-    <Compile Include="BoxModels\File.cs" />
-    <Compile Include="BoxModels\Folder.cs" />
+    <Compile Include="BoxModels\BoxBassFolder.cs" />
+    <Compile Include="BoxModels\BoxFile.cs" />
+    <Compile Include="BoxModels\BoxFolder.cs" />
+    <Compile Include="BoxModels\RetrieveFolderStructureOptions.cs" />
     <Compile Include="BoxModels\TagPrimitives.cs" />
     <Compile Include="BoxModels\UserPermissionFlags.cs" />
     <Compile Include="Global.asax.cs">
@@ -80,11 +82,14 @@
     <Compile Include="IBoxService.cs" />
     <Compile Include="BoxService.cs" />
     <Compile Include="Models\Entry.cs" />
+    <Compile Include="Models\FileInfo.cs" />
+    <Compile Include="Models\FilePermissions.cs" />
     <Compile Include="Models\Files.cs" />
     <Compile Include="Models\Folder.cs" />
     <Compile Include="Models\ItemCollection.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\PathCollection.cs" />
+    <Compile Include="Models\ShareInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Token.cs" />
   </ItemGroup>
@@ -102,6 +107,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BoxIntegrator\BoxIntegrator.csproj">
+      <Project>{3e0107ae-f2e6-423b-8ca5-08d10deb1a26}</Project>
+      <Name>BoxIntegrator</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

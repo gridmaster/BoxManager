@@ -5,3 +5,12 @@ D:\Projects\BoxManager\BoxManager\bin\Newtonsoft.Json.xml
 D:\Projects\BoxManager\BoxManager\obj\Debug\BoxManager.dll
 D:\Projects\BoxManager\BoxManager\obj\Debug\BoxManager.pdb
 D:\Projects\BoxManager\BoxManager\obj\Debug\BoxManager.csprojResolveAssemblyReference.cache
+C:\Projects\BoxManager\BoxManager\bin\BoxManager.dll
+C:\Projects\BoxManager\BoxManager\bin\BoxManager.pdb
+C:\Projects\BoxManager\BoxManager\bin\Newtonsoft.Json.dll
+C:\Projects\BoxManager\BoxManager\bin\Newtonsoft.Json.xml
+C:\Projects\BoxManager\BoxManager\obj\Debug\BoxManager.csprojResolveAssemblyReference.cache
+C:\Projects\BoxManager\BoxManager\obj\Debug\BoxManager.dll
+C:\Projects\BoxManager\BoxManager\obj\Debug\BoxManager.pdb
+C:\Projects\BoxManager\BoxManager\bin\BoxIntegrator.dll
+C:\Projects\BoxManager\BoxManager\bin\BoxIntegrator.pdb

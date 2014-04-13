@@ -16,9 +16,9 @@ namespace OAuth2Test
 
         static void Main(string[] args)
         {
-            //GET 
+            //GET u9lrankemqfefpsbhmmbfikkhmhg4iao
             string url =
-                "https://www.box.com/api/oauth2/authorize?response_type=code&client_id=u9lrankemqfefpsbhmmbfikkhmhg4iao&state=security_token%3Dd66d5824-ae41-4249-902e-c32ad5c5b244";
+                "https://www.box.com/api/oauth2/authorize?response_type=code&client_id=zb185q3gef41kbee9qi3y0kej2tdeq2f&state=security_token%3Dd66d5824-ae41-4249-902e-c32ad5c5b244";
 
             using (var client = new WebClient())
             {
@@ -29,7 +29,22 @@ namespace OAuth2Test
             var psi = new ProcessStartInfo("firefox.exe");
             psi.Arguments = url;
             Process.Start(psi);
-            
+
+            string reply = string.Empty;
+            Console.WriteLine("Enter 'exit' to well... exit.");
+
+            do
+            {
+                reply = Console.ReadLine();
+
+                using (var client = new WebClient())
+                {
+                    
+                   // var responseString = client.DownloadString("http://www.mydomain.com/recepticle.aspx");
+                }
+
+            } while (reply.ToLower() != "exit");
+
             //string response = WebRequest(Method.GET, url, String.Empty);
 
         }

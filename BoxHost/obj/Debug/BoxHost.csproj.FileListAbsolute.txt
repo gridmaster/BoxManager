@@ -8,3 +8,15 @@ D:\Projects\BoxManager\BoxHost\obj\Debug\BoxHost.exe
 D:\Projects\BoxManager\BoxHost\obj\Debug\BoxHost.pdb
 D:\Projects\BoxManager\BoxHost\bin\Debug\Newtonsoft.Json.dll
 D:\Projects\BoxManager\BoxHost\bin\Debug\Newtonsoft.Json.xml
+C:\Projects\BoxManager\BoxHost\bin\Debug\BoxHost.exe.config
+C:\Projects\BoxManager\BoxHost\obj\Debug\BoxHost.exe
+C:\Projects\BoxManager\BoxHost\obj\Debug\BoxHost.pdb
+C:\Projects\BoxManager\BoxHost\bin\Debug\BoxHost.exe
+C:\Projects\BoxManager\BoxHost\bin\Debug\BoxHost.pdb
+C:\Projects\BoxManager\BoxHost\bin\Debug\BoxManager.dll
+C:\Projects\BoxManager\BoxHost\bin\Debug\Newtonsoft.Json.dll
+C:\Projects\BoxManager\BoxHost\bin\Debug\BoxManager.pdb
+C:\Projects\BoxManager\BoxHost\bin\Debug\Newtonsoft.Json.xml
+C:\Projects\BoxManager\BoxHost\obj\Debug\BoxHost.csprojResolveAssemblyReference.cache
+C:\Projects\BoxManager\BoxHost\bin\Debug\BoxIntegrator.dll
+C:\Projects\BoxManager\BoxHost\bin\Debug\BoxIntegrator.pdb

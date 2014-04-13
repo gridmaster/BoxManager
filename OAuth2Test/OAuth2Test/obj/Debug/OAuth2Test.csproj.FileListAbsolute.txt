@@ -10,3 +10,11 @@ D:\Projects\BoxManager\OAuth2Test\OAuth2Test\bin\Debug\OAuth2Test.pdb
 D:\Projects\BoxManager\OAuth2Test\OAuth2Test\obj\Debug\OAuth2Test.csprojResolveAssemblyReference.cache
 D:\Projects\BoxManager\OAuth2Test\OAuth2Test\obj\Debug\OAuth2Test.exe
 D:\Projects\BoxManager\OAuth2Test\OAuth2Test\obj\Debug\OAuth2Test.pdb
+C:\Projects\BoxManager\OAuth2Test\OAuth2Test\bin\Debug\OAuth2Test.exe.config
+C:\Projects\BoxManager\OAuth2Test\OAuth2Test\bin\Debug\OAuth2Test.exe
+C:\Projects\BoxManager\OAuth2Test\OAuth2Test\bin\Debug\OAuth2Test.pdb
+C:\Projects\BoxManager\OAuth2Test\OAuth2Test\obj\Debug\OAuth2Test.csprojResolveAssemblyReference.cache
+C:\Projects\BoxManager\OAuth2Test\OAuth2Test\obj\Debug\OAuth2Test.exe
+C:\Projects\BoxManager\OAuth2Test\OAuth2Test\obj\Debug\OAuth2Test.pdb
+C:\Projects\BoxManager\OAuth2Test\OAuth2Test\bin\Debug\Newtonsoft.Json.dll
+C:\Projects\BoxManager\OAuth2Test\OAuth2Test\bin\Debug\Newtonsoft.Json.xml
