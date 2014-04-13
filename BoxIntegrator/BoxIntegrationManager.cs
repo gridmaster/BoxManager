@@ -42,18 +42,18 @@ namespace BoxIntegrator
                 using (var client = new WebClient())
                 {
                     client.Headers.Add("Authorization: Bearer " + token);
-                    result = client.DownloadString("https://api.box.com/2.0/folders/0"); // 1818218311");
+                    result = client.DownloadString(string.Format(UriFolders, 0));
                     folders = JsonConvert.DeserializeObject<Folder>(result);
                 }
 
                 folders.Folders = new List<Folder>();
                 folders.Files = new List<Files>();
                 folders = BuildTree(folders, result, token);
-                result = JsonConvert.SerializeObject(folders);
             }
             catch (Exception ex)
             {
-                result = String.Format("Error occured: {0}", ex.Message);
+                throw new Exception(
+                        string.Format("Error occured in Box Intigration code listing all files. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
             }
             return folders;
         }
@@ -93,7 +93,8 @@ namespace BoxIntegrator
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(String.Format("Exception in BoxInstance:GetFileInfoV2 {0} :: {1}", ex.Message, ex.InnerException), "Exception");
+                throw new Exception(
+                        string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
             }
 
             return acctFile;
@@ -119,8 +120,10 @@ namespace BoxIntegrator
             }
             catch (Exception ex)
             {
-                return null;
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code updating a file. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
             }
+
             return fileData;
         }
         #endregion Implement IBoxIntegrationManager
@@ -128,11 +131,20 @@ namespace BoxIntegrator
         #region Private Methods
         private void GetNewToken()
         {
-            string newToken = PostRefreshToken(UriTokenString);
-            Token tokenObj = JsonConvert.DeserializeObject<Token>(newToken);
+            try
+            {
+                string newToken = PostRefreshToken(UriTokenString);
+                Token tokenObj = JsonConvert.DeserializeObject<Token>(newToken);
 
-            refreshToken = tokenObj.refresh_token;
-            token = tokenObj.access_token;
+                refreshToken = tokenObj.refresh_token;
+                token = tokenObj.access_token;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration getting a token. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
         }
 
         private Folder BuildTree(Folder folders, string result, string access_token)
@@ -143,38 +155,51 @@ namespace BoxIntegrator
 
                 if (item.type == "file")
                 {
-                    using (var client = new WebClient())
+                    try
                     {
-                        Files file = new Files();
-                        client.Headers.Add("Authorization: Bearer " + access_token);
-                        string fileresult = client.DownloadString(String.Format("https://api.box.com/2.0/files/{0}", item.id));
-                        file = JsonConvert.DeserializeObject<Files>(fileresult);
-                        if (folders.Files == null)
-                            folders.Files = new List<Files>();
-                        folders.Files.Add(file);
-                        continue;
+                        using (var client = new WebClient())
+                        {
+                            Files file = new Files();
+                            client.Headers.Add("Authorization: Bearer " + access_token);
+                            string fileresult = client.DownloadString(String.Format(UriFiles, item.id));
+                            file = JsonConvert.DeserializeObject<Files>(fileresult);
+                            if (folders.Files == null)
+                                folders.Files = new List<Files>();
+                            folders.Files.Add(file);
+                            continue;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(
+                            string.Format("Error occured in Box Intigration getting files. Error returned: {0} :: {1}",
+                                          ex.Message, ex.InnerException));
                     }
                 }
 
                 if (item.type == "folder")
                 {
-                    using (var client = new WebClient())
+                    try
                     {
-                        try
+                        using (var client = new WebClient())
                         {
                             Folder fold = new Folder();
                             client.Headers.Add("Authorization: Bearer " + access_token);
-                            string folderresult = client.DownloadString(String.Format("https://api.box.com/2.0/folders/{0}", item.id));
+                            string folderresult =
+                                client.DownloadString(String.Format(UriFolders, item.id));
                             fold = JsonConvert.DeserializeObject<Folder>(folderresult);
                             if (folders.Folders == null)
                                 folders.Folders = new List<Folder>();
                             folders.Folders.Add(fold);
+                            // use recursion to build out the full structure
                             // BuildTree(fold, result, access_token);
                         }
-                        catch (Exception ex)
-                        {
-                            result = ex.Message;
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(
+                            string.Format("Error occured in Box Intigration getting folders. Error returned: {0} :: {1}",
+                                          ex.Message, ex.InnerException));
                     }
                 }
             }
