@@ -36,7 +36,6 @@ namespace BoxManager
             string errorDescription = string.Empty;
             string code = string.Empty;
             string state = string.Empty;
-            CookieContainer container = new CookieContainer(5);
 
             if (WebOperationContext.Current != null)
             {
@@ -72,7 +71,9 @@ namespace BoxManager
                     var jig = BI.UpdateFile(fileId, body);
                     body = "{\"shared_link\": {\"access\": \"open\"}}";
                     jig = BI.UpdateFile(fileId, body);
-                    
+
+                    var sup = BI.GetFilebyId(fileId);
+
                     // var jig = PostFileShare(token.access_token, fileId);
                     //    https://app.box.com/s/brb0p33vfsf3e13dckuk
 

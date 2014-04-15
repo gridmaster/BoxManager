@@ -6,6 +6,7 @@ namespace BoxIntegrator.Interfaces
     {
         Folder ListAllFiles(string folderId);
         FileInfo GetFile(string fileId);
+        FileInfo GetFilebyId(string fileId);
         Files UpdateFile(string fileId, string body);
     }
 }
