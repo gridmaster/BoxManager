@@ -65,14 +65,14 @@ namespace BoxManager
 
                     string fileId = "16169522245"; // "16063364337"
 
+                    var Fstuff = BI.GetFolder("0");
+
                     var stuff = BI.GetFile(fileId);
 
                     string body = "{\"name\":\"car.jpg\"}"; // "{\"description\": \"new file description\"}";
                     var jig = BI.UpdateFile(fileId, body);
                     body = "{\"shared_link\": {\"access\": \"open\"}}";
                     jig = BI.UpdateFile(fileId, body);
-
-                    var sup = BI.GetFilebyId(fileId);
 
                     // var jig = PostFileShare(token.access_token, fileId);
                     //    https://app.box.com/s/brb0p33vfsf3e13dckuk

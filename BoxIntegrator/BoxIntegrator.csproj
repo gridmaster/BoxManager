@@ -59,9 +59,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\BaseRequestData.cs" />
     <Compile Include="Request\FileRequestData.cs" />
+    <Compile Include="Request\FolderRequestData.cs" />
     <Compile Include="Request\restrictedObject.cs" />
     <Compile Include="Request\RestrictedTo.cs" />
     <Compile Include="Response\BaseResponseData.cs" />
+    <Compile Include="Response\FileResponseData.cs" />
+    <Compile Include="Response\FolderResponseData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

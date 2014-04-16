@@ -6,6 +6,7 @@ using System.Text;
 using BoxIntegrator.Interfaces;
 using BoxIntegrator.Models;
 using BoxIntegrator.Request;
+using BoxIntegrator.Response;
 using Newtonsoft.Json;
 using FileInfo = BoxIntegrator.Models.FileInfo;
 
@@ -59,60 +60,57 @@ namespace BoxIntegrator
             return folders;
         }
 
-        public FileInfo GetFile(string fileId)
+        public FolderResponseData GetFolder(string folderId)
         {
-            var acctFile = new FileInfo();
-
-            GetNewToken();
+            var folderResponseData = new FolderResponseData();
 
             try
             {
-                string url = String.Format(UriFiles, fileId);
+                GetNewToken();
 
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
-                    request.Method = "GET";
-                    request.ContentType = "application/json";
-                    request.Headers.Add("Authorization: Bearer " + token);
-                using (WebResponse response = request.GetResponse())
+                FolderRequestData folderRequest = new FolderRequestData
                 {
+                    Id = Convert.ToInt64(folderId),
+                    token = token
+                };
 
-                    var reader = new StreamReader(response.GetResponseStream());
+                string url = String.Format(UriFolders, folderId);
 
-                    string responseString = reader.ReadToEnd();
+                string jsonData = Post(url, folderRequest);
 
-                    if (responseString.Length > 3) //Json returns "{}" for blank data
-                    {
-                        var jsonSettings = new JsonSerializerSettings();
-                        jsonSettings.NullValueHandling = NullValueHandling.Ignore;
-                        jsonSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+                if (jsonData.Length > 3) //Json returns "{}" for blank data
+                {
+                    var jsonSettings = new JsonSerializerSettings();
+                    jsonSettings.NullValueHandling = NullValueHandling.Ignore;
+                    jsonSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
 
-                        acctFile = JsonConvert.DeserializeObject<FileInfo>(responseString, jsonSettings);
-                    }
-
-                    response.Close();
+                    folderResponseData = JsonConvert.DeserializeObject<FolderResponseData>(jsonData, jsonSettings);
                 }
             }
             catch (Exception ex)
             {
                 throw new Exception(
-                        string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
+                    string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
             }
 
-            return acctFile;
+            return folderResponseData;
         }
 
-        public FileInfo GetFilebyId(string fileId)
+        public FileResponseData GetFile(string fileId)
         {
-            var acctFile = new FileInfo();
-            FileRequestData fileRequest = new FileRequestData();
-
-            GetNewToken();
-
-            fileRequest.Id = System.Convert.ToInt64(fileId);
-            fileRequest.token = token;
+            var fileResponseData = new FileResponseData();
 
             try
             {
+                GetNewToken();
+
+                FileRequestData fileRequest = new FileRequestData
+                {
+                    Id = Convert.ToInt64(fileId),
+                    token = token
+                };
+
                 string url = String.Format(UriFiles, fileId);
 
                 string jsonData = Post(url, fileRequest);
@@ -123,42 +121,17 @@ namespace BoxIntegrator
                     jsonSettings.NullValueHandling = NullValueHandling.Ignore;
                     jsonSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
 
-                    acctFile = JsonConvert.DeserializeObject<FileInfo>(jsonData, jsonSettings);
+                    fileResponseData = JsonConvert.DeserializeObject<FileResponseData>(jsonData, jsonSettings);
                 }
             }
             catch (Exception ex)
             {
                 throw new Exception(
-                        string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
+                    string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
             }
 
-            return acctFile;
-        }
-
-        private string Post<T>(string uri, T postData) where T : BaseRequestData
-        {
-            string jsonData = string.Empty;
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
-                    request.Method = "GET";
-                    request.ContentType = "application/json";
-                    request.Headers.Add("Authorization: Bearer " + postData.token);
-                using (WebResponse response = request.GetResponse())
-                {
-                    var reader = new StreamReader(response.GetResponseStream());
-
-                    jsonData = reader.ReadToEnd();
-                    response.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(
-                        string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
-            }
-
-            return jsonData;
+            return fileResponseData;
         }
 
         public Files UpdateFile(string fileId, string body)
@@ -190,6 +163,33 @@ namespace BoxIntegrator
         #endregion Implement IBoxIntegrationManager
 
         #region Private Methods
+
+        private string Post<T>(string uri, T postData) where T : BaseRequestData
+        {
+            string jsonData = string.Empty;
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+                request.Method = "GET";
+                request.ContentType = "application/json";
+                request.Headers.Add("Authorization: Bearer " + postData.token);
+                using (WebResponse response = request.GetResponse())
+                {
+                    var reader = new StreamReader(response.GetResponseStream());
+
+                    jsonData = reader.ReadToEnd();
+                    response.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                        string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
+            }
+
+            return jsonData;
+        }
+
         private void GetNewToken()
         {
             try
