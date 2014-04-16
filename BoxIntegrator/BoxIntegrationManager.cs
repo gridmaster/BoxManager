@@ -15,6 +15,7 @@ namespace BoxIntegrator
     public class BoxIntegrationManager : BaseBoxManager, IBoxIntegrationManager
     {
         #region Private Properties
+
         private string token { get; set; }
         // this is a new GUID selected during development
         // private const string securety_token = "d66d5824-ae41-4249-902e-c32ad5c5b244";
@@ -26,12 +27,16 @@ namespace BoxIntegrator
         #endregion Private Properties
 
         #region Constructors
-        public BoxIntegrationManager(string clientId, string clientSecret, string refreshToken) : base(clientId, clientSecret, refreshToken)
+
+        public BoxIntegrationManager(string clientId, string clientSecret, string refreshToken)
+            : base(clientId, clientSecret, refreshToken)
         {
         }
+
         #endregion Constructors
 
         #region Implement IBoxIntegrationManager
+
         public Folder ListAllFiles(string folderId)
         {
             string result = String.Empty;
@@ -55,7 +60,9 @@ namespace BoxIntegrator
             catch (Exception ex)
             {
                 throw new Exception(
-                        string.Format("Error occured in Box Intigration code listing all files. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
+                    string.Format(
+                        "Error occured in Box Intigration code listing all files. Error returned: {0} :: {1}",
+                        ex.Message, ex.InnerException));
             }
             return folders;
         }
@@ -69,10 +76,10 @@ namespace BoxIntegrator
                 GetNewToken();
 
                 FolderRequestData folderRequest = new FolderRequestData
-                {
-                    Id = Convert.ToInt64(folderId),
-                    token = token
-                };
+                    {
+                        Id = Convert.ToInt64(folderId),
+                        token = token
+                    };
 
                 string url = String.Format(UriFolders, folderId);
 
@@ -106,14 +113,14 @@ namespace BoxIntegrator
                 GetNewToken();
 
                 FileRequestData fileRequest = new FileRequestData
-                {
-                    Id = Convert.ToInt64(fileId),
-                    token = token
-                };
+                    {
+                        Id = Convert.ToInt64(fileId),
+                        token = token
+                    };
 
                 string url = String.Format(UriFiles, fileId);
 
-                string jsonData = Post(url, fileRequest);
+                string jsonData = Get(url, fileRequest);
 
                 if (jsonData.Length > 3) //Json returns "{}" for blank data
                 {
@@ -155,14 +162,37 @@ namespace BoxIntegrator
             catch (Exception ex)
             {
                 throw new Exception(
-                    string.Format("Error occured in Box Intigration code updating a file. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
+                    string.Format("Error occured in Box Intigration code updating a file. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
             }
 
             return fileData;
         }
+
         #endregion Implement IBoxIntegrationManager
 
         #region Private Methods
+
+        private string Get<T>(string uri, T getData) where T : BaseRequestData
+        {
+            string jsonData = string.Empty;
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    client.Headers.Add("Authorization: Bearer " + getData.token);
+                    jsonData = client.DownloadString(uri);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+
+            }
+            return jsonData;
+        }
 
         private string Post<T>(string uri, T postData) where T : BaseRequestData
         {
