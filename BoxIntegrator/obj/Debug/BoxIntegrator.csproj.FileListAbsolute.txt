@@ -1,4 +1,3 @@
-C:\Projects\BoxManager\BoxIntegrator\obj\Debug\BoxIntegrator.csprojResolveAssemblyReference.cache
 C:\Projects\BoxManager\BoxIntegrator\bin\Debug\BoxIntegrator.dll
 C:\Projects\BoxManager\BoxIntegrator\bin\Debug\BoxIntegrator.pdb
 C:\Projects\BoxManager\BoxIntegrator\obj\Debug\BoxIntegrator.dll

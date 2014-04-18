@@ -44,7 +44,7 @@ namespace BoxIntegrator
                 using (var client = new WebClient())
                 {
                     client.Headers.Add("Authorization: Bearer " + token);
-                    result = client.DownloadString(string.Format(CoreConstants.UriFolders, 0));
+                    result = client.DownloadString(string.Format(CoreConstants.UriGetFolders, 0));
                     folders = JsonConvert.DeserializeObject<Folder>(result);
                 }
 
@@ -77,7 +77,7 @@ namespace BoxIntegrator
                         token = token
                     };
 
-                string url = String.Format(CoreConstants.UriFolders, folderId);
+                string url = String.Format(CoreConstants.UriGetFolders, folderId);
 
                 jsonData = Get(url, folderRequest);
 
@@ -109,7 +109,7 @@ namespace BoxIntegrator
                         token = token
                     };
 
-                string url = String.Format(CoreConstants.UriFiles, fileId);
+                string url = String.Format(CoreConstants.UriGetFile, fileId);
 
                 jsonData = Get(url, fileRequest);
 
@@ -128,7 +128,7 @@ namespace BoxIntegrator
 
         public Files UpdateFile(string fileId, string body)
         {
-            string uri = String.Format(CoreConstants.UriFiles, fileId);
+            string uri = String.Format(CoreConstants.UriGetFile, fileId);
             Files fileData = new Files();
 
             GetNewToken();
@@ -157,7 +157,7 @@ namespace BoxIntegrator
         public FileResponseData CreateFileShare(string fileId, string fileShareType)
         {
             string body = string.Format(CoreConstants.sharedLink, fileShareType);
-            string uri = string.Format(CoreConstants.UriFiles, fileId);
+            string uri = string.Format(CoreConstants.UriGetFile, fileId);
             string jsonData = string.Empty;
             FileResponseData fileResponseData = new FileResponseData();
 
@@ -325,7 +325,7 @@ namespace BoxIntegrator
                         {
                             Files file = new Files();
                             client.Headers.Add(CoreConstants.authorizationBearer + accessToken);
-                            string fileresult = client.DownloadString(String.Format(CoreConstants.UriFiles, item.id));
+                            string fileresult = client.DownloadString(String.Format(CoreConstants.UriGetFile, item.id));
                             file = JsonConvert.DeserializeObject<Files>(fileresult);
                             if (folders.Files == null)
                                 folders.Files = new List<Files>();
@@ -350,7 +350,7 @@ namespace BoxIntegrator
                             Folder fold = new Folder();
                             client.Headers.Add(CoreConstants.authorizationBearer + accessToken);
                             string folderresult =
-                                client.DownloadString(String.Format(CoreConstants.UriFolders, item.id));
+                                client.DownloadString(String.Format(CoreConstants.UriGetFolders, item.id));
                             fold = JsonConvert.DeserializeObject<Folder>(folderresult);
                             if (folders.Folders == null)
                                 folders.Folders = new List<Folder>();

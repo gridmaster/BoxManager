@@ -62,6 +62,8 @@ namespace BoxManager
 
                     BoxIntegrationManager BI = new BoxIntegrationManager(client_id, client_secret, token.refresh_token);
 
+                    var xxx = BI.GetFile("23432423");
+
                     var crap = BI.CreateFileShare(fileId, "Open");
 
                     var theshit = BI.ListAllFiles("0");

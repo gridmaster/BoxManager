@@ -50,7 +50,9 @@ namespace BoxIntegrator.Core
         // Delete a folder
         // DELETE /folders/{folder id}
         // Example: https://api.box.com/2.0/folders/FOLDER_ID?recursive=true
-        public const string UriFolders = BaseUri + "/folders/{0}"; // GET, PUT, DELETE
+        public const string UriGetFolders = BaseUri + "/folders/{0}";
+        public const string UriUpdateFolders = UriGetFolders;
+        public const string UriDeleteFolders = UriGetFolders;
         
         // Create a shared link using UriFolders
         // Example: PUT /folders/{folder id}
@@ -65,7 +67,7 @@ namespace BoxIntegrator.Core
         // Exmaple: GET folders/{id}/items
         //      or: https://api.box.com/2.0/folders/FOLDER_ID/items?limit=2&offset=0 
         // Optional: fields, limit, offset
-        public const string UriFoldersItems = UriFolders + "/items"; // GET
+        public const string UriFoldersItems = UriGetFolders + "/items"; // GET
         
         // Copy a folder
         // Example: POST /folders/{folder id}/copy
@@ -73,11 +75,11 @@ namespace BoxIntegrator.Core
         // Request Body attributes
         // Required: parent, id
         // Optional: name
-        public const string UriFoldersCopy = UriFolders + "/copy";
+        public const string UriFoldersCopy = UriGetFolders + "/copy";
 
         // view a folders colaborators
         // Example: GET /folders/{id}/colaborations
-        public const string UriFoldersCollaborations = UriFolders + "/collaborations";
+        public const string UriFoldersCollaborations = UriGetFolders + "/collaborations";
 
         // Get items in the trash
         // Example: GET /folders/trash/items
@@ -89,7 +91,8 @@ namespace BoxIntegrator.Core
         // Example: GET /folders/{folder id}/trash
         // Permanently delete a trashed folder
         // Example: DELETE /folders/{folder id}/trash
-        public const string UriGetTrashedFolder = UriFolders + "/trash";
+        public const string UriGetTrashedFolder = UriGetFolders + "/trash";
+        public const string UriDeleteTrashedFolder = UriGetFolders + "/trash";
 
         // Restore a trashed folder
         // Example: POST /folders/{folder id}
@@ -115,13 +118,15 @@ namespace BoxIntegrator.Core
         // Example: DELETE /files/{id}
         //      or: ttps://api.box.com/2.0/files/FILE_ID -H "Authorization: Bearer ACCESS_TOKEN" 
         //                  -H "If-Match: a_unique_value"
-        public const string UriFiles = BaseUri + "/files/{0}"; // GET, PUT, DELETE
+        public const string UriGetFile = BaseUri + "/files/{0}";
+        public const string UriUpdateFile = UriGetFile;
+        public const string UriDeleteFile = UriGetFile;
         
         // Download a file
         // URL Parameters: version
         // Example: GET /files/{file id}/content
         // Response is 302 if found, 202 if accepted but not available and a Ready-After header
-        public const string UriFilesContent = UriFiles + "/content"; // POST
+        public const string UriFilesContent = UriGetFile + "/content"; // POST
 
         // Upload a file
         // Example: POST https://upload.box.com/api/2.0/files/content
@@ -149,7 +154,7 @@ namespace BoxIntegrator.Core
         // Example: GET /files/{file id}/versions
         //      or: https://api.box.com/2.0/files/FILE_ID/versions -H "Authorization: Bearer ACCESS_TOKEN"
         // Returns: An array of version objects 
-        public const string UriFilesVersions = UriFiles + "/versions";
+        public const string UriFilesVersions = UriGetFile + "/versions";
         
         // Promote an older version of a file
         // Example: POST /files/{file id}/versions/current
@@ -158,12 +163,113 @@ namespace BoxIntegrator.Core
         // Request Body Attributes
         // Required: type (must be file_version for this request), id
         // Returns: The newly promoted file_version object i
-        public const string UriPromoteFile = UriFiles + "/versions/current";
+        public const string UriPromoteFile = UriGetFile + "/versions/current";
 
+        // Delete an old version of a file
+        // Example: DELETE /files/{file id}/versions/{version_id}
+        //      or: https://api.box.com/2.0/files/FILE_ID/versions/VERSION_ID -H "Authorization: Bearer ACCESS_TOKEN" 
+        // Returns: An empty 204 if delete successful, if If-Match fails a 412 Precondition Failed
+        public const string UriDeleteFileByVersion = UriGetFile + "/versions/{version_id}";
 
-        public const string UriSharedItems = UriFiles + "/shared_items"; // GET
-        public const string UriComments = BaseUri + "/comments";
+        // Copy a file
+        // Example: POST /files/{file id}/copy
+        // Request Body Attributes
+        // Required: parent, id
+        // Optional: name
+        // Returns: a full file object
+        public const string UriCopyFile = UriGetFile + "/copy";
+
+        // Get a thumbnail of a file
+        // Example: GET /files/{file id}/thumbnail.extension
+        //      or: https://api.box.com/2.0/files/FILE_ID/thumbnail.png?min_height=256&min_width=256
+        //                  -H "Authorization: Bearer ACCESS_TOKEN"
+        // URL Parameters: min_height, min_width, max_height, max_width
+        //
+        // Returns: There are three success cases that your application needs to account for:
+        // If the thumbnail isn’t available yet, a 202 Accepted HTTP status will be returned, 
+        // including a Location header pointing to a placeholder graphic that can be used until 
+        // the thumbnail is returned. A Retry-After header will also be returned, indicating the 
+        // time in seconds after which the thumbnail will be available. Your application should 
+        // only attempt to get the thumbnail again after Retry-After time.
+        // If Box can’t generate a thumbnail for this file type, a 302 Found response will be returned, 
+        // redirecting to a placeholder graphic in the requested size for this particular file type, 
+        // e.g. this for a CSV file).
+        // If the thumbnail is available, a 200 OK response will be returned with the contents of the 
+        // thumbnail in the body
+        // If Box is unable to generate a thumbnail for this particular file, a 404 Not Found response 
+        // will be returned with a code of preview_cannot_be_generated. If there are any bad parameters 
+        // sent in, a standard 400 Bad Request will be returned.
+        public const string UriGetFileThumbnail = UriGetFile + "/thumbnail.extension";
+
+        // Create a shared link using UriFiles
+        // Example: PUT /files/{files id}
+        //      or: https://api.box.com/2.0/files/FILE_ID -H "Authorization: Bearer ACCESS_TOKEN" 
+        //              -d '{"shared_link": {"access": "open"}}' 
+        // Request body attributes:
+        // shared_link, shared_link.access, shared_link.unshared_at, shared_link.permissions
+        // shared_link.permissions.can_download, shared_link.permissions.can_preview
+        // Returns a full file object
+
+        // Get a trashed file
+        // Example: GET /files/{file id}/trash
+        // Returns: a full file object
+        // Permanently delete a trashed file
+        // Example: DELETE /files/{file id}/trash
+        // Returns: An empty 204 No Content
+        public const string UriGetTrashedFile = UriGetFile + "/trash";
+        public const string UriDeleteTrashedFile = UriGetFile + "/trash";
+
+        // Restore a trashed item
+        // Example: POST /files/{file id}
+        //      or: https://api.box.com/2.0/files/FILE_ID -H "Authorization: Bearer ACCESS_TOKEN" 
+        //              -d '{"name":"non-conflicting-name.jpg"}'
+        // Request Body Attributes: name, parent, parent.id
+        // Returns: The full item will be returned with a 201 Created, 403, 405 or 409 on fail
+        public const string UriRestoreTrashedItem = UriGetFile;
+
+        // View comments of a file
+        // Example: GET /files/{file id}/comments
+        //      or: https://api.box.com/2.0/files/FILE_ID/comments -H "Authorization: Bearer ACCESS_TOKEN" 
+        // Returns: A collection of comment objects
+        public const string UriComments = UriGetFile + "/comments";
+
+        // Get the tasks for a file
+        // Example: GET /files/{id}/tasks
+        //      or: https://api.box.com/2.0/files/FILE_ID/tasks -H "Authorization: Bearer ACCESS_TOKEN"
+        // Returns: A collection of mini task objects
+        public const string UriGetFileTasks = UriGetFile + "/tasks";
+
+        // Add a comment to an item
+        // Example: POST /comments
+        //      or: https://api.box.com/2.0/comments -H "Authorization: Bearer ACCESS_TOKEN"
+        //              -d '{"item": {"type": "file", "id": "FILE_ID"}, "message": "YOUR_MESSAGE"}'
+        // Request Body Attributes
+        // Required: item, item.type, item.id, message
+        // Returns: The new comment object
+        public const string UriAddCommentToItem = BaseUri + "/comment";
+
+        // Change a commet's message
+        // Example: PUT /comments/{comment id}
+        //      or: https://api.box.com/2.0/comments/COMMENT_ID -H "Authorization: Bearer ACCESS_TOKEN" 
+        //                  -d '{"message":"My New Message"}'
+        // Request Body Attributes
+        // Required: message
+        // Returns: The full updated comment object 
+        // Get info on comment
+        // Example: GET /comments/{comment id}
+        // Returns: The full updated comment object 
+        // Delete a comment
+        // Example: DELETE /comments/{comment_id}
+        // Returns: an empty 204 or thrown errors
+        public const string UriUpdateComment = UriAddCommentToItem + "/";
+        public const string UriGetComment = UriUpdateComment;
+        public const string UriDeleteComment = UriUpdateComment;
+
+        // TODO: Finish, stopped before...
         public const string UriCollaborations = BaseUri + "/collaborations";
+
+
+        public const string UriSharedItems = UriGetFile + "/shared_items"; // GET
         public const string UriSearch = BaseUri + "/search";
         public const string UriEvents = BaseUri + "/events";
         public const string UriUsers = BaseUri + "/users";
