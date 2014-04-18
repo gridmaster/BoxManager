@@ -2,7 +2,7 @@
 
 namespace BoxIntegrator.Request
 {
-    public class restrictedObject
+    public class RestrictedObject
     {
         [JsonProperty("type")]
         public string objectType { get; set; }

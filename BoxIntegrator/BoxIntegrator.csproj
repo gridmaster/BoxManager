@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BaseBoxManager.cs" />
     <Compile Include="BoxIntegrationManager.cs" />
+    <Compile Include="Core\CoreConstants.cs" />
     <Compile Include="Interfaces\IBoxIntegrationManager.cs" />
     <Compile Include="Models\Entry.cs" />
     <Compile Include="Models\FileInfo.cs" />
@@ -59,8 +60,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\BaseRequestData.cs" />
     <Compile Include="Request\FileRequestData.cs" />
+    <Compile Include="Request\FileShareRequestData.cs" />
     <Compile Include="Request\FolderRequestData.cs" />
-    <Compile Include="Request\restrictedObject.cs" />
+    <Compile Include="Request\RestrictedObject.cs" />
     <Compile Include="Request\RestrictedTo.cs" />
     <Compile Include="Response\BaseResponseData.cs" />
     <Compile Include="Response\FileResponseData.cs" />

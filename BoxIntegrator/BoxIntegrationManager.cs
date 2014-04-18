@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
+using BoxIntegrator.Core;
 using BoxIntegrator.Interfaces;
 using BoxIntegrator.Models;
 using BoxIntegrator.Request;
 using BoxIntegrator.Response;
 using Newtonsoft.Json;
-using FileInfo = BoxIntegrator.Models.FileInfo;
 
 namespace BoxIntegrator
 {
@@ -17,13 +18,7 @@ namespace BoxIntegrator
         #region Private Properties
 
         private string token { get; set; }
-        // this is a new GUID selected during development
-        // private const string securety_token = "d66d5824-ae41-4249-902e-c32ad5c5b244";
-        private const string UriTokenString = "https://www.box.com/api/oauth2/token";
-        private const string UriAPI = "https://www.box.com/api/oauth2/";
-        private const string UriFolders = "https://api.box.com/2.0/folders/{0}";
-        private const string UriFiles = "https://api.box.com/2.0/files/{0}";
-
+        
         #endregion Private Properties
 
         #region Constructors
@@ -49,7 +44,7 @@ namespace BoxIntegrator
                 using (var client = new WebClient())
                 {
                     client.Headers.Add("Authorization: Bearer " + token);
-                    result = client.DownloadString(string.Format(UriFolders, 0));
+                    result = client.DownloadString(string.Format(CoreConstants.UriFolders, 0));
                     folders = JsonConvert.DeserializeObject<Folder>(result);
                 }
 
@@ -70,29 +65,22 @@ namespace BoxIntegrator
         public FolderResponseData GetFolder(string folderId)
         {
             var folderResponseData = new FolderResponseData();
+            string jsonData = string.Empty;
+
+            GetNewToken();
 
             try
             {
-                GetNewToken();
-
                 FolderRequestData folderRequest = new FolderRequestData
                     {
                         Id = Convert.ToInt64(folderId),
                         token = token
                     };
 
-                string url = String.Format(UriFolders, folderId);
+                string url = String.Format(CoreConstants.UriFolders, folderId);
 
-                string jsonData = Post(url, folderRequest);
+                jsonData = Get(url, folderRequest);
 
-                if (jsonData.Length > 3) //Json returns "{}" for blank data
-                {
-                    var jsonSettings = new JsonSerializerSettings();
-                    jsonSettings.NullValueHandling = NullValueHandling.Ignore;
-                    jsonSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
-
-                    folderResponseData = JsonConvert.DeserializeObject<FolderResponseData>(jsonData, jsonSettings);
-                }
             }
             catch (Exception ex)
             {
@@ -100,6 +88,8 @@ namespace BoxIntegrator
                     string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
                                   ex.Message, ex.InnerException));
             }
+
+            folderResponseData = DeserializeJson<FolderResponseData>(jsonData);
 
             return folderResponseData;
         }
@@ -107,29 +97,22 @@ namespace BoxIntegrator
         public FileResponseData GetFile(string fileId)
         {
             var fileResponseData = new FileResponseData();
+            string jsonData = string.Empty;
 
+            GetNewToken();
+            
             try
             {
-                GetNewToken();
-
                 FileRequestData fileRequest = new FileRequestData
                     {
                         Id = Convert.ToInt64(fileId),
                         token = token
                     };
 
-                string url = String.Format(UriFiles, fileId);
+                string url = String.Format(CoreConstants.UriFiles, fileId);
 
-                string jsonData = Get(url, fileRequest);
+                jsonData = Get(url, fileRequest);
 
-                if (jsonData.Length > 3) //Json returns "{}" for blank data
-                {
-                    var jsonSettings = new JsonSerializerSettings();
-                    jsonSettings.NullValueHandling = NullValueHandling.Ignore;
-                    jsonSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
-
-                    fileResponseData = JsonConvert.DeserializeObject<FileResponseData>(jsonData, jsonSettings);
-                }
             }
             catch (Exception ex)
             {
@@ -138,12 +121,14 @@ namespace BoxIntegrator
                                   ex.Message, ex.InnerException));
             }
 
+            fileResponseData = DeserializeJson<FileResponseData>(jsonData);
+
             return fileResponseData;
         }
 
         public Files UpdateFile(string fileId, string body)
         {
-            string uri = String.Format(UriFiles, fileId);
+            string uri = String.Format(CoreConstants.UriFiles, fileId);
             Files fileData = new Files();
 
             GetNewToken();
@@ -152,8 +137,8 @@ namespace BoxIntegrator
             {
                 using (var client = new WebClient())
                 {
-                    client.Headers.Add("Authorization: Bearer " + token);
-                    client.Headers.Add("Content-Type", "application/json");
+                    client.Headers.Add(CoreConstants.authorizationBearer + token);
+                    client.Headers.Add("Content-Type", CoreConstants.applicationType);
                     string response = client.UploadString(uri, "PUT", body);
 
                     fileData = JsonConvert.DeserializeObject<Files>(response);
@@ -169,9 +154,63 @@ namespace BoxIntegrator
             return fileData;
         }
 
+        public FileResponseData CreateFileShare(string fileId, string fileShareType)
+        {
+            string body = string.Format(CoreConstants.sharedLink, fileShareType);
+            string uri = string.Format(CoreConstants.UriFiles, fileId);
+            string jsonData = string.Empty;
+            FileResponseData fileResponseData = new FileResponseData();
+
+            GetNewToken();
+
+            try
+            {
+                FileShareRequestData fileRequest = new FileShareRequestData
+                    {
+                        Body = string.Format(CoreConstants.sharedLink, fileShareType)
+                    };
+
+                jsonData = Put(uri, fileRequest);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code creating file share. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            fileResponseData = DeserializeJson<FileResponseData>(jsonData);
+
+            return fileResponseData;
+        }
+
         #endregion Implement IBoxIntegrationManager
 
         #region Private Methods
+
+        private string Put<T>(string uri, T putData) where T : BaseRequestData
+        {
+            string jsonData = string.Empty;
+            string body = JsonConvert.SerializeObject(putData);
+
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    client.Headers.Add(CoreConstants.authorizationBearer + token);
+                    client.Headers.Add("Content-Type", CoreConstants.applicationType);
+                    jsonData = client.UploadString(uri, "PUT", body);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code on PUT. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+
+            }
+            return jsonData;
+        }
 
         private string Get<T>(string uri, T getData) where T : BaseRequestData
         {
@@ -180,14 +219,14 @@ namespace BoxIntegrator
             {
                 using (var client = new WebClient())
                 {
-                    client.Headers.Add("Authorization: Bearer " + getData.token);
+                    client.Headers.Add(CoreConstants.authorizationBearer + token);
                     jsonData = client.DownloadString(uri);
                 }
             }
             catch (Exception ex)
             {
                 throw new Exception(
-                    string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
+                    string.Format("Error occured in Box Intigration code on GET. Error returned: {0} :: {1}",
                                   ex.Message, ex.InnerException));
 
             }
@@ -199,10 +238,17 @@ namespace BoxIntegrator
             string jsonData = string.Empty;
             try
             {
+                using( WebClient client = new WebClient())
+                {
+                    client.Headers.Add(CoreConstants.authorizationBearer + postData.token);
+                    client.Headers.Add("Content-Type", CoreConstants.applicationType);
+                   // jsonData = client.UploadData(uri, "POST", "");
+                }
+
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-                request.Method = "GET";
-                request.ContentType = "application/json";
-                request.Headers.Add("Authorization: Bearer " + postData.token);
+                request.Method = "POST";
+                request.ContentType = CoreConstants.applicationType;
+                request.Headers.Add(CoreConstants.authorizationBearer + postData.token);
                 using (WebResponse response = request.GetResponse())
                 {
                     var reader = new StreamReader(response.GetResponseStream());
@@ -214,17 +260,44 @@ namespace BoxIntegrator
             catch (Exception ex)
             {
                 throw new Exception(
-                        string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
+                        string.Format("Error occured in Box Intigration code on POST. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
             }
 
             return jsonData;
         }
 
+        private string OldPost<T>(string uri, T postData) where T : BaseRequestData
+        {
+            string jsonData = string.Empty;
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+                request.Method = "POST";
+                request.ContentType = CoreConstants.applicationType;
+                request.Headers.Add(CoreConstants.authorizationBearer + postData.token);
+                using (WebResponse response = request.GetResponse())
+                {
+                    var reader = new StreamReader(response.GetResponseStream());
+
+                    jsonData = reader.ReadToEnd();
+                    response.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                        string.Format("Error occured in Box Intigration code on POST. Error returned: {0} :: {1}", ex.Message, ex.InnerException));
+            }
+
+            return jsonData;
+        }
+
+
         private void GetNewToken()
         {
             try
             {
-                string newToken = PostRefreshToken(UriTokenString);
+                string newToken = PostRefreshToken(CoreConstants.UriTokenString);
                 Token tokenObj = JsonConvert.DeserializeObject<Token>(newToken);
 
                 refreshToken = tokenObj.refresh_token;
@@ -238,7 +311,7 @@ namespace BoxIntegrator
             }
         }
 
-        private Folder BuildTree(Folder folders, string result, string access_token)
+        private Folder BuildTree(Folder folders, string result, string accessToken)
         {
             for (int i = 0; i < folders.item_collection.entries.Count; i++)
             {
@@ -251,8 +324,8 @@ namespace BoxIntegrator
                         using (var client = new WebClient())
                         {
                             Files file = new Files();
-                            client.Headers.Add("Authorization: Bearer " + access_token);
-                            string fileresult = client.DownloadString(String.Format(UriFiles, item.id));
+                            client.Headers.Add(CoreConstants.authorizationBearer + accessToken);
+                            string fileresult = client.DownloadString(String.Format(CoreConstants.UriFiles, item.id));
                             file = JsonConvert.DeserializeObject<Files>(fileresult);
                             if (folders.Files == null)
                                 folders.Files = new List<Files>();
@@ -275,9 +348,9 @@ namespace BoxIntegrator
                         using (var client = new WebClient())
                         {
                             Folder fold = new Folder();
-                            client.Headers.Add("Authorization: Bearer " + access_token);
+                            client.Headers.Add(CoreConstants.authorizationBearer + accessToken);
                             string folderresult =
-                                client.DownloadString(String.Format(UriFolders, item.id));
+                                client.DownloadString(String.Format(CoreConstants.UriFolders, item.id));
                             fold = JsonConvert.DeserializeObject<Folder>(folderresult);
                             if (folders.Folders == null)
                                 folders.Folders = new List<Folder>();
@@ -297,6 +370,35 @@ namespace BoxIntegrator
 
             return folders;
         }
+
+        private T DeserializeJson<T>(string jsonData)
+        {
+            T deserializedJson = default(T);
+
+            try
+            {
+                if (jsonData.Length > 3) //Json returns "{}" for blank data
+                {
+                    JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+                        {
+                            NullValueHandling = NullValueHandling.Ignore,
+                            MissingMemberHandling = MissingMemberHandling.Ignore
+                        };
+
+                    deserializedJson = JsonConvert.DeserializeObject<T>(jsonData, jsonSettings);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format(
+                        "Error occured in Box Intigration code deserializing json. Error returned: {0} :: {1}",
+                        ex.Message, ex.InnerException));
+            }
+
+            return deserializedJson;
+        }
+
         #endregion Private Methods
 
     }

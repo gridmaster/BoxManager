@@ -54,6 +54,7 @@ namespace BoxManager
                 result = PostAccessToken(uriTokenString, code);
                 Token token = new Token();
                 Folder folders = new Folder();
+                string fileId = "16169522245"; // "16063364337"
 
                 try
                 {
@@ -61,9 +62,11 @@ namespace BoxManager
 
                     BoxIntegrationManager BI = new BoxIntegrationManager(client_id, client_secret, token.refresh_token);
 
+                    var crap = BI.CreateFileShare(fileId, "Open");
+
                     var theshit = BI.ListAllFiles("0");
 
-                    string fileId = "16169522245"; // "16063364337"
+
 
                     var Fstuff = BI.GetFolder("0");
 

@@ -8,6 +8,6 @@ namespace BoxIntegrator.Request
         public string scope { get; set; }
 
         [JsonProperty("object")]
-        public restrictedObject restrictedToObject { get; set; }
+        public RestrictedObject restrictedToObject { get; set; }
     }
 }

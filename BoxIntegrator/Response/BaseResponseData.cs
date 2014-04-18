@@ -22,3 +22,13 @@ namespace BoxIntegrator.Response
 
     }
 }
+/*
+{
+    "type":"error",
+    "status":403,
+    "code":"storage_limit_exceeded",
+    "help_url":"",
+    "message":"Account storage limit reached",
+    "request_id":"7522414694f97d171b6aea"
+}
+*/
