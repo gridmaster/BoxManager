@@ -50,19 +50,28 @@ namespace BoxManager
 
             if (string.IsNullOrEmpty(error))
             {
-
-                result = PostAccessToken(uriTokenString, code);
-                Token token = new Token();
+  
                 Folder folders = new Folder();
                 string fileId = "16169522245"; // "16063364337"
 
                 try
                 {
+                    BoxIntegrationManager BI = new BoxIntegrationManager(client_id, client_secret);
+
+                    result = BI.PostAccessToken(uriTokenString, code);
+
+                    Token token = new Token();
                     token = JsonConvert.DeserializeObject<Token>(result);
 
-                    BoxIntegrationManager BI = new BoxIntegrationManager(client_id, client_secret, token.refresh_token);
+                    BI.SetRefreshToken(token.refresh_token);
 
-                    var xxx = BI.GetFile("23432423");
+                    var myfold = BI.CreateFolder("MyFolder", "0");
+
+                    var mynewfold = BI.RestoreTrashedFolder("MyOtherFolder", "1864215247");
+
+                    var asdf = BI.AddCommentToItem(fileId, "file", "What up, buttercup?");
+
+                    var xxx = BI.GetFile(fileId);
 
                     var crap = BI.CreateFileShare(fileId, "Open");
 
@@ -156,23 +165,6 @@ namespace BoxManager
             return "";
         }
 
-        private static string PostAccessToken(string uri, string code)
-        {
-            string responseString = string.Empty;
 
-            using (var client = new WebClient())
-            {
-                var values = new NameValueCollection();
-                values["grant_type"] = "authorization_code";
-                values["code"] = code;
-                values["client_id"] = client_id;
-                values["client_secret"] = client_secret;
-
-                var response = client.UploadValues(uri, values);
-
-                responseString = Encoding.Default.GetString(response);
-            }
-            return responseString;
-        }
     }
 }

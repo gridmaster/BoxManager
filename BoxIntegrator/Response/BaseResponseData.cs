@@ -6,7 +6,7 @@ namespace BoxIntegrator.Response
 {
     public class BaseResponseData
     {
-        public string error { get; set; }
+        public int error { get; set; }
 
         [JsonProperty(PropertyName = "error_description")]
         public string errorDescription { get; set; }

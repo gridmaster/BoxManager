@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -23,14 +24,38 @@ namespace BoxIntegrator
 
         #region Constructors
 
-        public BoxIntegrationManager(string clientId, string clientSecret, string refreshToken)
-            : base(clientId, clientSecret, refreshToken)
+        public BoxIntegrationManager(string clientId, string clientSecret)
+            : base(clientId, clientSecret)
         {
         }
 
         #endregion Constructors
 
         #region Implement IBoxIntegrationManager
+        
+        public string PostAccessToken(string uri, string code)
+        {
+            string responseString = string.Empty;
+
+            using (var client = new WebClient())
+            {
+                var values = new NameValueCollection();
+                values["grant_type"] = CoreConstants.authorizationCode;
+                values["code"] = code;
+                values["client_id"] = base.clientId;
+                values["client_secret"] = base.clientSecret;
+
+                var response = client.UploadValues(uri, values);
+
+                responseString = Encoding.Default.GetString(response);
+            }
+            return responseString;
+        }
+
+        public void SetRefreshToken(string refreshToken)
+        {
+            base.refreshToken = refreshToken;
+        }
 
         public Folder ListAllFiles(string folderId)
         {
@@ -184,9 +209,193 @@ namespace BoxIntegrator
             return fileResponseData;
         }
 
+        // Create a folder 
+        // Example: POST /folders
+        //      or: https://api.box.com/2.0/folders -H "Authorization: Bearer ACCESS_TOKEN" -d '{"name":"New Folder", "parent": {"id": "0"}}'
+        // Required: name, parent, id
+        // public const string UriBaseFolders = BaseUri + "/folders"; 
+        // Returns: A full folder object
+        public FolderResponseData CreateFolder(string name, string parentId)
+        {
+            var folderResponseData = new FolderResponseData();
+            string jsonData = string.Empty;
+
+            GetNewToken();
+
+            try
+            {
+                CreateFolderRequestData folderRequest = new CreateFolderRequestData
+                {
+                    name = name,
+                    parent = new Item
+                        {
+                            id = parentId
+                        },
+                    token = token
+                };
+
+                jsonData = Post(CoreConstants.UriBaseFolders, folderRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code creating a folder. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            folderResponseData = DeserializeJson<FolderResponseData>(jsonData);
+
+            return folderResponseData;
+        }
+
+        // Restore a trashed folder
+        // Example: POST /folders/{folder id}
+        //      or: https://api.box.com/2.0/folders/FOLDER_ID -H "Authorization: Bearer ACCESS_TOKEN" 
+        //                  -d '{"name":"non-conflicting-name"}'
+        // Request Body Attributes:
+        //      name, parent, parent.id
+        // public const string UriRestoreTrashedFolder = UriBaseFolders + "/{id}";
+        // Returns: The full item will be returned with a 201 Created status
+        public FolderResponseData RestoreTrashedFolder(string name, string folderId)
+        {
+            var folderResponseData = new FolderResponseData();
+            string jsonData = string.Empty;
+
+            GetNewToken();
+
+            try
+            {
+                RestoreFolderRequestData folderRequest = new RestoreFolderRequestData
+                {
+                    name = name,
+                    token = token
+                };
+
+                string url = String.Format(CoreConstants.UriRestoreTrashedFolder, folderId);
+
+                jsonData = Post(url, folderRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code creating a folder. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            folderResponseData = DeserializeJson<FolderResponseData>(jsonData);
+
+            return folderResponseData;
+        }
+
+        // Add a comment to an item
+        // Example: POST /comments
+        //      or: https://api.box.com/2.0/comments -H "Authorization: Bearer ACCESS_TOKEN"
+        //              -d '{"item": {"type": "file", "id": "FILE_ID"}, "message": "YOUR_MESSAGE"}'
+        // Request Body Attributes
+        // Required: item, item.type, item.id, message
+        // Returns: The new comment object
+        public CommentResponseData AddCommentToItem(string fileId, string itemType, string message)
+        {
+            GetNewToken();
+
+            CommentRequestData commentRequest = new CommentRequestData
+                {
+                    item = new Item
+                        {
+                            id = fileId,
+                            type = itemType
+                        },
+                    message = message,
+                    token = token
+                };
+            string jsonData = string.Empty;
+
+            try
+            {
+                string url = CoreConstants.UriAddCommentToItem;
+
+                jsonData = Post(url, commentRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code adding comment to item. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            CommentResponseData commentResponse = DeserializeJson<CommentResponseData>(jsonData);
+
+            return commentResponse;
+        }
+
+
+        // public const string UriAddCommentToItem = BaseUri + "/comment";
+
         #endregion Implement IBoxIntegrationManager
 
         #region Private Methods
+        private string Post<T>(string uri, T postData) where T : BaseRequestData
+        {
+            string jsonData = string.Empty;
+            try
+            {
+                jsonData = JsonConvert.SerializeObject(postData);
+                byte[] requestData = Encoding.UTF8.GetBytes(jsonData);
+
+                WebRequest request = WebRequest.Create(uri);
+                request.Method = "POST";
+                request.ContentType = CoreConstants.contentType;
+                request.Headers.Add(CoreConstants.authorizationBearer + postData.token);
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(requestData, 0, requestData.Length);
+                dataStream.Dispose();
+
+                string jsonResponse = string.Empty;
+                using (WebResponse response = request.GetResponse())
+                {
+                    if (((HttpWebResponse)response).StatusDescription == "Created")
+                    {
+                        dataStream = response.GetResponseStream();
+                        using (StreamReader reader = new StreamReader(dataStream))
+                        {
+                            jsonResponse = reader.ReadToEnd();
+                        }
+                    }
+                }
+
+                //logger.DebugFormat(
+                //    "postAsync{0}URI: {1}{0}Post Data: {2}{0}Content Type: {3}{0}Response: {4}",
+                //    Environment.NewLine,
+                //    uri,
+                //    jsonData,
+                //    CoreConstants.CONTENT_TYPE,
+                //    jsonResponse
+                //    );
+
+                BasicResponseData responseCode = JsonConvert.DeserializeObject<BasicResponseData>(jsonResponse);
+                if (responseCode.error > 0)
+                {
+                    throw new Exception(string.Format("Error CodeString {0} Returned from Web Service call.",
+                                                      responseCode.error));
+                }
+
+                return jsonResponse;
+            }
+            catch (Exception ex)
+            {
+                string error = string.Format(
+                    "Exception in postAsync{0}URI: {1}{0}Post Data: {2}{0}Content Type: {3}{0}",
+                    Environment.NewLine,
+                    uri,
+                    jsonData,
+                    CoreConstants.contentType);
+
+                throw new Exception(error, ex);
+            }
+        }
 
         private string Put<T>(string uri, T putData) where T : BaseRequestData
         {
@@ -233,7 +442,7 @@ namespace BoxIntegrator
             return jsonData;
         }
 
-        private string Post<T>(string uri, T postData) where T : BaseRequestData
+        private string Post_it<T>(string uri, T postData) where T : BaseRequestData
         {
             string jsonData = string.Empty;
             try
@@ -291,7 +500,6 @@ namespace BoxIntegrator
 
             return jsonData;
         }
-
 
         private void GetNewToken()
         {

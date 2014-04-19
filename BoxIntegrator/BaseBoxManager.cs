@@ -11,18 +11,18 @@ namespace BoxIntegrator
         protected string clientSecret { get; set; }
         protected string refreshToken { get; set; }
 
-        public BaseBoxManager(string clientId, string clientSecret, string refreshToken)
+        public BaseBoxManager(string clientId, string clientSecret)
         {
             if (string.IsNullOrEmpty(clientId) )
                 throw new ArgumentException("Constructor must contain clientId");
             if (string.IsNullOrEmpty(clientSecret))
                 throw new ArgumentException("Constructor must contain clientSecret");
-            if (string.IsNullOrEmpty(refreshToken))
-                throw new ArgumentException("Constructor must contain refreshToken");
+            //if (string.IsNullOrEmpty(refreshToken))
+            //    throw new ArgumentException("Constructor must contain refreshToken");
 
             this.clientId = clientId;
             this.clientSecret = clientSecret;
-            this.refreshToken = refreshToken;
+            this.refreshToken = "";
         }
 
         public string PostRefreshToken(string uri)

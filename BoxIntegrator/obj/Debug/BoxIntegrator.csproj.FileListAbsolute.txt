@@ -4,3 +4,4 @@ C:\Projects\BoxManager\BoxIntegrator\obj\Debug\BoxIntegrator.dll
 C:\Projects\BoxManager\BoxIntegrator\obj\Debug\BoxIntegrator.pdb
 C:\Projects\BoxManager\BoxIntegrator\bin\Debug\Newtonsoft.Json.dll
 C:\Projects\BoxManager\BoxIntegrator\bin\Debug\Newtonsoft.Json.xml
+C:\Projects\BoxManager\BoxIntegrator\obj\Debug\BoxIntegrator.csprojResolveAssemblyReference.cache

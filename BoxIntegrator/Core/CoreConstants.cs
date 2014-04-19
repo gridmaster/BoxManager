@@ -18,13 +18,13 @@ namespace BoxIntegrator.Core
         // Method: POST
         // Required: grant_type, client_id, 
         // Optional: code, refresh_token
-        public const string UriTokenString = "https://www.box.com/api/oauth2/token"; // POST
+        public const string UriTokenString = "https://www.box.com/api/oauth2/token";
 
         // Revoke access
         // Example: 'client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&token=YOUR_TOKEN' 
         // Method: POST
         // Required: client_id, client_secret, token
-        public const string UriRevoke = "https://www.box.com/api/oauth2/revoke"; // POST
+        public const string UriRevoke = "https://www.box.com/api/oauth2/revoke"; 
 
         public const string UriAPI = "https://www.box.com/api/oauth2/";
 
@@ -38,7 +38,8 @@ namespace BoxIntegrator.Core
         // Example: POST /folders
         //      or: https://api.box.com/2.0/folders -H "Authorization: Bearer ACCESS_TOKEN" -d '{"name":"New Folder", "parent": {"id": "0"}}'
         // Required: name, parent, id
-        public const string UriBaseFolders = BaseUri + "/folders"; // POST
+        // Returns: A full folder object
+        public const string UriBaseFolders = BaseUri + "/folders"; 
 
         // Get the info about a folder
         // GET /folders/{folder id}
@@ -100,6 +101,7 @@ namespace BoxIntegrator.Core
         //                  -d '{"name":"non-conflicting-name"}'
         // Request Body Attributes:
         //      name, parent, parent.id
+        public const string UriRestoreTrashedFolder = UriBaseFolders + "/{0}";
 
         // Get information about a file
         // Example: GET /files/{file id}
@@ -278,6 +280,8 @@ namespace BoxIntegrator.Core
         // API magic string constants
         public const string sharedLink = "{{\"shared_link\": {{\"access\": \"{0}\"}}}}";
         public const string authorizationBearer = "Authorization: Bearer ";
+        public const string authorizationCode = "authorization_code";
         public const string applicationType = "application/json";
+        public const string contentType = "application/json";
     }
 }

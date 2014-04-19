@@ -81,11 +81,13 @@
     </Compile>
     <Compile Include="IBoxService.cs" />
     <Compile Include="BoxService.cs" />
+    <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Entry.cs" />
     <Compile Include="Models\FileInfo.cs" />
     <Compile Include="Models\FilePermissions.cs" />
     <Compile Include="Models\Files.cs" />
     <Compile Include="Models\Folder.cs" />
+    <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ItemCollection.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\PathCollection.cs" />
