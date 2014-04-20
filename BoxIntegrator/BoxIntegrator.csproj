@@ -62,19 +62,25 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\BaseRequestData.cs" />
     <Compile Include="Request\CommentRequestData.cs" />
+    <Compile Include="Request\CopyFolderRequestData.cs" />
     <Compile Include="Request\CreateFolderRequestData.cs" />
     <Compile Include="Request\FileRequestData.cs" />
     <Compile Include="Request\FileShareRequestData.cs" />
+    <Compile Include="Request\FolderCollaborationsRequestData.cs" />
     <Compile Include="Request\FolderRequestData.cs" />
+    <Compile Include="Request\FolderShareRequestData.cs" />
     <Compile Include="Request\FolderUpdateData.cs" />
+    <Compile Include="Request\GetTrashedItemsRequestData.cs" />
     <Compile Include="Request\RestoreFolderRequestData.cs" />
     <Compile Include="Request\RestrictedObject.cs" />
     <Compile Include="Request\RestrictedTo.cs" />
     <Compile Include="Response\BaseResponseData.cs" />
     <Compile Include="Response\BasicResponseData.cs" />
     <Compile Include="Response\CommentResponseData.cs" />
+    <Compile Include="Response\FolderCollaborationsResponseData.cs" />
     <Compile Include="Response\FileResponseData.cs" />
     <Compile Include="Response\FolderResponseData.cs" />
+    <Compile Include="Response\GetTrashedItemsResponseData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

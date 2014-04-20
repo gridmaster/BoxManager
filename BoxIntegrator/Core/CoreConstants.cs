@@ -76,7 +76,7 @@ namespace BoxIntegrator.Core
         // Request Body attributes
         // Required: parent, id
         // Optional: name
-        public const string UriFoldersCopy = UriGetFolders + "/copy";
+        public const string UriCopyFolder = UriGetFolders + "/copy";
 
         // view a folders colaborators
         // Example: GET /folders/{id}/colaborations
@@ -86,7 +86,7 @@ namespace BoxIntegrator.Core
         // Example: GET /folders/trash/items
         //      or: https://api.box.com/2.0/folders/trash/items?limit=2&offset=0
         // URL Parameters: fields, limit, offset
-        public const string GetFoldersFromTrash = UriBaseFolders + "/trash/items";
+        public const string UriGetFoldersFromTrash = UriBaseFolders + "/trash/items";
 
         // Get a trashed folder
         // Example: GET /folders/{folder id}/trash

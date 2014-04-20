@@ -16,6 +16,8 @@ namespace BoxIntegrator
 {
     public class BoxIntegrationManager : BaseBoxManager, IBoxIntegrationManager
     {
+// ReSharper disable SuggestUseVarKeywordEvident
+
         #region Private Properties
 
         private string token { get; set; }
@@ -32,7 +34,18 @@ namespace BoxIntegrator
         #endregion Constructors
 
         #region Implement IBoxIntegrationManager
-        
+
+        #region Token and Access Methods
+        public void SetRefreshToken(string refreshToken)
+        {
+            base.refreshToken = refreshToken;
+        }
+
+        // This grants the Token
+        // Example: grant_type=authorization_code&code=YOUR_AUTH_CODE&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET
+        // Method: POST
+        // Required: grant_type, client_id, 
+        // Optional: code, refresh_token
         public string PostAccessToken(string uri, string code)
         {
             string responseString = string.Empty;
@@ -52,41 +65,62 @@ namespace BoxIntegrator
             return responseString;
         }
 
-        public void SetRefreshToken(string refreshToken)
+        // Revoke access
+        // Example: 'client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&token=YOUR_TOKEN' 
+        // Method: POST
+        // Required: client_id, client_secret, token
+        // public const string UriRevoke = "https://www.box.com/api/oauth2/revoke"; 
+        public void RevokeAccess()
         {
-            base.refreshToken = refreshToken;
+            throw new NotImplementedException("Revoke Access is not implemented");
+            // TODO: implement
         }
+        #endregion Token and Access Methods
 
-        public Folder ListAllFiles(string folderId)
+        #region Folder Methods
+        // Create a folder 
+        // Example: POST /folders
+        //      or: https://api.box.com/2.0/folders -H "Authorization: Bearer ACCESS_TOKEN" -d '{"name":"New Folder", "parent": {"id": "0"}}'
+        // Required: name, parent, id
+        // public const string UriBaseFolders = BaseUri + "/folders"; 
+        // Returns: A full folder object
+        public FolderResponseData CreateFolder(string name, string parentId)
         {
-            string result = String.Empty;
-            Folder folders = new Folder();
+            var folderResponseData = new FolderResponseData();
+            string jsonData = string.Empty;
 
             GetNewToken();
 
             try
             {
-                using (var client = new WebClient())
+                CreateFolderRequestData folderRequest = new CreateFolderRequestData
                 {
-                    client.Headers.Add("Authorization: Bearer " + token);
-                    result = client.DownloadString(string.Format(CoreConstants.UriGetFolders, 0));
-                    folders = JsonConvert.DeserializeObject<Folder>(result);
-                }
+                    name = name,
+                    parent = new Item
+                    {
+                        id = parentId
+                    },
+                    token = token
+                };
 
-                folders.Folders = new List<Folder>();
-                folders.Files = new List<Files>();
-                folders = BuildTree(folders, result, token);
+                jsonData = Post(CoreConstants.UriBaseFolders, folderRequest);
+
             }
             catch (Exception ex)
             {
                 throw new Exception(
-                    string.Format(
-                        "Error occured in Box Intigration code listing all files. Error returned: {0} :: {1}",
-                        ex.Message, ex.InnerException));
+                    string.Format("Error occured in Box Intigration code creating a folder. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
             }
-            return folders;
+
+            folderResponseData = DeserializeJson<FolderResponseData>(jsonData);
+
+            return folderResponseData;
         }
 
+        // Get a folder
+        // GET /folders/{folder id}
+        // Returns a folder object
         public FolderResponseData GetFolder(string folderId)
         {
             var folderResponseData = new FolderResponseData();
@@ -97,51 +131,14 @@ namespace BoxIntegrator
             try
             {
                 FolderRequestData folderRequest = new FolderRequestData
-                    {
-                        Id = Convert.ToInt64(folderId),
-                        token = token
-                    };
+                {
+                    Id = Convert.ToInt64(folderId),
+                    token = token
+                };
 
                 string url = String.Format(CoreConstants.UriGetFolders, folderId);
 
                 jsonData = Get(url, folderRequest);
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(
-                    string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
-                                  ex.Message, ex.InnerException));
-            }
-
-            folderResponseData = DeserializeJson<FolderResponseData>(jsonData);
-
-            return folderResponseData;
-        }
-
-        // Delete a folder
-        // DELETE /folders/{folder id}
-        // Example: https://api.box.com/2.0/folders/FOLDER_ID?recursive=true
-        // Returns: An empty 204 response will be returned upon successful deletion. 
-        //  An error is thrown if the folder is not empty and the ‘recursive’ parameter is not included.
-        public FolderResponseData DeleteFolder(string folderId)
-        {
-            var folderResponseData = new FolderResponseData();
-            string jsonData = string.Empty;
-
-            GetNewToken();
-            
-            try
-            {
-                FolderRequestData folderRequest = new FolderRequestData
-                    {
-                        Id = Convert.ToInt64(folderId),
-                        token = token
-                    };
-
-                string url = String.Format(CoreConstants.UriDeleteFolders, folderId);
-
-                jsonData = Delete(url, folderRequest);
 
             }
             catch (Exception ex)
@@ -191,14 +188,51 @@ namespace BoxIntegrator
 
             return folderResponseData;
         }
-        
-        // Create a folder 
-        // Example: POST /folders
-        //      or: https://api.box.com/2.0/folders -H "Authorization: Bearer ACCESS_TOKEN" -d '{"name":"New Folder", "parent": {"id": "0"}}'
-        // Required: name, parent, id
-        // public const string UriBaseFolders = BaseUri + "/folders"; 
-        // Returns: A full folder object
-        public FolderResponseData CreateFolder(string name, string parentId)
+
+        // Delete a folder
+        // DELETE /folders/{folder id}
+        // Example: https://api.box.com/2.0/folders/FOLDER_ID?recursive=true
+        // Returns: An empty 204 response will be returned upon successful deletion. 
+        //  An error is thrown if the folder is not empty and the ‘recursive’ parameter is not included.
+        public string DeleteFolder(string folderId)
+        {
+            string jsonData = string.Empty;
+
+            GetNewToken();
+
+            try
+            {
+                FolderRequestData folderRequest = new FolderRequestData
+                {
+                    Id = Convert.ToInt64(folderId),
+                    token = token
+                };
+
+                string url = String.Format(CoreConstants.UriDeleteFolders, folderId);
+
+                jsonData = Delete(url, folderRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            return "success";
+        }
+
+        // Copy a folder
+        // Example: POST /folders/{folder id}/copy
+        //      or: https://api.box.com/2.0/folders/FOLDER_ID/copy -H "Authorization: Bearer ACCESS_TOKEN" 
+        //                  -d '{"parent": {"id" : DESTINATION_FOLDER_ID}}
+        // Request Body attributes
+        // Required: parent, id
+        // Optional: name
+        // public const string UriCopyFolder = UriGetFolders + "/copy";
+        // Returns: A full folder object is returned
+        public FolderResponseData CopyFolder(string folderId, string parentId)
         {
             var folderResponseData = new FolderResponseData();
             string jsonData = string.Empty;
@@ -207,17 +241,17 @@ namespace BoxIntegrator
 
             try
             {
-                CreateFolderRequestData folderRequest = new CreateFolderRequestData
+                CopyFolderRequestData folderRequest = new CopyFolderRequestData
                 {
-                    name = name,
                     parent = new Item
                     {
                         id = parentId
                     },
                     token = token
                 };
+                string url = String.Format(CoreConstants.UriCopyFolder, folderId);
 
-                jsonData = Post(CoreConstants.UriBaseFolders, folderRequest);
+                jsonData = Post(url, folderRequest);
 
             }
             catch (Exception ex)
@@ -232,6 +266,191 @@ namespace BoxIntegrator
             return folderResponseData;
         }
 
+        // Create a shared Folder link
+        // Example: PUT /folders/{folder id}
+        //      or: https://api.box.com/2.0/folders/FOLDER_ID -H "Authorization: Bearer ACCESS_TOKEN" 
+        //              -d '{"shared_link": {"access": "open"}}' 
+        // Request body attributes
+        // shared_link, shared_link.access, shared_link.unshared_at, shared_link.permissions
+        //  shared_link.permissions.can_download, shared_link.permissions.can_preview
+        // Returns: A full folder object containing the updated shared link
+        // TODO: add optional parameter[] to allow more fields to be updated
+        public FolderResponseData CreateFolderShare(string folderId, string folderShareType)
+        {
+            string jsonData = string.Empty;
+
+            FolderResponseData folderResponseData = new FolderResponseData();
+
+            GetNewToken();
+
+            try
+            {
+                FolderShareRequestData folderRequest = new FolderShareRequestData
+                {
+                    Body = string.Format(CoreConstants.sharedLink, folderShareType)
+                };
+                string uri = string.Format(CoreConstants.UriGetFolders, folderId);
+
+                jsonData = Put(uri, folderRequest);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code creating a folder share. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            folderResponseData = DeserializeJson<FolderResponseData>(jsonData);
+
+            return folderResponseData;
+        }
+
+        // view a folders colaborators
+        // Example: GET /folders/{id}/colaborations
+        // public const string UriFoldersCollaborations = UriGetFolders + "/collaborations";
+        // Returns: A collection of collaboration objects
+        public FolderCollaborationsResponseData GetFolderCollaborations(string folderId)
+        {
+            FolderCollaborationsResponseData folderCollaborationsResponseData = new FolderCollaborationsResponseData();
+            string jsonData = string.Empty;
+
+            GetNewToken();
+
+            try
+            {
+                FolderCollaborationsRequestData foldeCollaborationsRequest = new FolderCollaborationsRequestData
+                {
+                    Id = Convert.ToInt64(folderId),
+                    token = token
+                };
+
+                string url = String.Format(CoreConstants.UriFoldersCollaborations, folderId);
+
+                jsonData = Get(url, foldeCollaborationsRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code getting a folders collaborations. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            folderCollaborationsResponseData = DeserializeJson<FolderCollaborationsResponseData>(jsonData);
+
+            return folderCollaborationsResponseData;
+        }
+
+        // Get files and/or folders that have been moved to the trash
+        // Filters: Any attribute in the full files or folders objects can be passed in with the fields 
+        //      parameter to get specific attributes, and only those specific attributes back; otherwise, 
+        //      the mini format is returned for each item by default. Multiple attributes can be passed in 
+        //      separated by commas e.g. fields=name,created_at. Paginated results can be retrieved using the limit and offset parameters.
+        // Example: GET /folders/trash/items
+        //      or: https://api.box.com/2.0/folders/trash/items?limit=2&offset=0
+        // URL Parameters: fields, limit, offset
+        // public const string UriGetFoldersFromTrash = UriBaseFolders + "/trash/items";
+        // Returns: A collection of items contained in the trash
+        // TODO: implement parameters[] for fields and limit=2&offset=0
+        public GetTrashedItemsResponseData GetItemsFromTrash()
+        {
+            var getTrashedItemsResponseData = new GetTrashedItemsResponseData();
+            string jsonData = string.Empty;
+
+            GetNewToken();
+
+            try
+            {
+                GetTrashedItemsRequestData getTrashedItemsRequestData = new GetTrashedItemsRequestData
+                {
+                    limit = 2,
+                    offset = 0,
+                    token = token
+                };
+
+                jsonData = Get(CoreConstants.UriGetFoldersFromTrash, getTrashedItemsRequestData);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            getTrashedItemsResponseData = DeserializeJson<GetTrashedItemsResponseData>(jsonData);
+
+            return getTrashedItemsResponseData;
+        }
+
+        // Get a trashed folder
+        // Example: GET /folders/{folder id}/trash
+        // Returns: The full item will be returned, including information about when the it was moved to the trash
+        // public const string UriGetTrashedFolder = UriGetFolders + "/trash";
+        public FolderResponseData GetTrashedFolder(string folderId)
+        {
+            var folderResponseData = new FolderResponseData();
+            string jsonData = string.Empty;
+
+            GetNewToken();
+
+            try
+            {
+                FolderRequestData folderRequest = new FolderRequestData
+                {
+                    token = token
+                };
+
+                string url = String.Format(CoreConstants.UriGetTrashedFolder, folderId);
+
+                jsonData = Get(url, folderRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code getting a trashed folder. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            folderResponseData = DeserializeJson<FolderResponseData>(jsonData);
+
+            return folderResponseData;
+        }
+        
+        // Permanently delete a trashed folder
+        // Example: DELETE /folders/{folder id}/trash
+        // public const string UriDeleteTrashedFolder = UriGetFolders + "/trash";
+        // Returns: An empty 204 No Content response
+        public string PermanentlyDeleteTrashedFolder(string folderId)
+        {
+            string jsonData = string.Empty;
+
+            GetNewToken();
+
+            try
+            {
+                FolderRequestData folderRequest = new FolderRequestData
+                {
+                    Id = Convert.ToInt64(folderId),
+                    token = token
+                };
+
+                string url = String.Format(CoreConstants.UriDeleteTrashedFolder, folderId);
+
+                jsonData = Delete(url, folderRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code deleting a trashed folder. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            return jsonData;
+        }
+        
         // Restore a trashed folder
         // Example: POST /folders/{folder id}
         //      or: https://api.box.com/2.0/folders/FOLDER_ID -H "Authorization: Bearer ACCESS_TOKEN" 
@@ -272,6 +491,9 @@ namespace BoxIntegrator
             return folderResponseData;
         }
 
+        #endregion Folder Methods
+
+        #region File Methods
         public FileResponseData GetFile(string fileId)
         {
             var fileResponseData = new FileResponseData();
@@ -361,8 +583,7 @@ namespace BoxIntegrator
 
             return fileResponseData;
         }
-
-
+        
         // Add a comment to an item
         // Example: POST /comments
         //      or: https://api.box.com/2.0/comments -H "Authorization: Bearer ACCESS_TOKEN"
@@ -404,6 +625,39 @@ namespace BoxIntegrator
 
             return commentResponse;
         }
+        #endregion File Methods
+
+        #region Expanded Methods
+        public Folder ListAllFiles(string folderId)
+        {
+            string result = String.Empty;
+            Folder folders = new Folder();
+
+            GetNewToken();
+
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    client.Headers.Add("Authorization: Bearer " + token);
+                    result = client.DownloadString(string.Format(CoreConstants.UriGetFolders, 0));
+                    folders = JsonConvert.DeserializeObject<Folder>(result);
+                }
+
+                folders.Folders = new List<Folder>();
+                folders.Files = new List<Files>();
+                folders = BuildTree(folders, result, token);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format(
+                        "Error occured in Box Intigration code listing all files. Error returned: {0} :: {1}",
+                        ex.Message, ex.InnerException));
+            }
+            return folders;
+        }
+        #endregion Expanded Methods
 
         #endregion Implement IBoxIntegrationManager
 
@@ -500,7 +754,7 @@ namespace BoxIntegrator
             {
                 using (var client = new WebClient())
                 {
-                    client.Headers.Add(CoreConstants.authorizationBearer + token);
+                    client.Headers.Add(CoreConstants.authorizationBearer + getData.token);
                     jsonData = client.DownloadString(uri);
                 }
             }
@@ -542,14 +796,12 @@ namespace BoxIntegrator
                         }
                     }
                 }
-
-                //HttpWebResponse response = (HttpWebResponse) request.GetResponse();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            return jsonData;
+            return "success";
         }
 
         private string Post_it<T>(string uri, T postData) where T : BaseRequestData
@@ -718,6 +970,6 @@ namespace BoxIntegrator
         }
 
         #endregion Private Methods
-
+// ReSharper restore SuggestUseVarKeywordEvident
     }
 }
