@@ -65,7 +65,10 @@ namespace BoxManager
 
                     BI.SetRefreshToken(token.refresh_token);
 
-                    // var myfold = BI.CreateFolder("MyFolder", "0");
+                    var myfold = BI.CreateFolder("MyFolder", "0");
+
+                    var t1 = BI.UpdateFolder("1864558791", "{\"name\":\"OldName\"}");
+                    
 
                     var mynewfold = BI.DeleteFolder("1864215247");
 

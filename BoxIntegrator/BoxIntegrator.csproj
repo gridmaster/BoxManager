@@ -66,6 +66,7 @@
     <Compile Include="Request\FileRequestData.cs" />
     <Compile Include="Request\FileShareRequestData.cs" />
     <Compile Include="Request\FolderRequestData.cs" />
+    <Compile Include="Request\FolderUpdateData.cs" />
     <Compile Include="Request\RestoreFolderRequestData.cs" />
     <Compile Include="Request\RestrictedObject.cs" />
     <Compile Include="Request\RestrictedTo.cs" />
