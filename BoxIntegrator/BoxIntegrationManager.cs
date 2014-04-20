@@ -216,7 +216,7 @@ namespace BoxIntegrator
             catch (Exception ex)
             {
                 throw new Exception(
-                    string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
+                    string.Format("Error occured in Box Intigration code deleting a folder. Error returned: {0} :: {1}",
                                   ex.Message, ex.InnerException));
             }
 
@@ -494,6 +494,11 @@ namespace BoxIntegrator
         #endregion Folder Methods
 
         #region File Methods
+
+        // Get information about a file
+        // Example: GET /files/{file id}
+        // public const string UriGetFile = BaseUri + "/files/{0}";
+        // Returns: A full file object
         public FileResponseData GetFile(string fileId)
         {
             var fileResponseData = new FileResponseData();
@@ -526,6 +531,16 @@ namespace BoxIntegrator
             return fileResponseData;
         }
 
+        // Update a files information
+        // Example: PUT /files/{file id}
+        //      or: https://api.box.com/2.0/files/FILE_ID -H "Authorization: Bearer ACCESS_TOKEN" 
+        //                  -d '{"name":"new name.jpg"}
+        // Headers: If-Match
+        // Request Body Attributes:
+        // name, description, parent, parent.id, shared_link, shared_link.access, shared_link.unshared_at,
+        //       shared_link.permissions, shared_link.permissions.download, shared_link.permissions.preview, tags
+        // public const string UriUpdateFile = UriGetFile;
+        // Returns: A full file object is returned 
         public Files UpdateFile(string fileId, string body)
         {
             string uri = String.Format(CoreConstants.UriGetFile, fileId);
@@ -552,6 +567,42 @@ namespace BoxIntegrator
             }
 
             return fileData;
+        }
+
+        // Delete a file
+        // Headers: If-Match the etag of the file
+        // Returns and empty 204 for successful delete, or 412 Precondition Failed if If-Match fales
+        // Example: DELETE /files/{id}
+        //      or: ttps://api.box.com/2.0/files/FILE_ID -H "Authorization: Bearer ACCESS_TOKEN" 
+        //                  -H "If-Match: a_unique_value"
+        // public const string UriDeleteFile = UriGetFile;
+        public string DeleteFile(string fileId)
+        {
+            string jsonData = string.Empty;
+
+            GetNewToken();
+
+            try
+            {
+                FileRequestData fileRequest = new FileRequestData
+                {
+                    Id = Convert.ToInt64(fileId),
+                    token = token
+                };
+
+                string url = String.Format(CoreConstants.UriDeleteFile, fileId);
+
+                jsonData = Delete(url, fileRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code deleting a file. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            return "success";
         }
 
         public FileResponseData CreateFileShare(string fileId, string fileShareType)

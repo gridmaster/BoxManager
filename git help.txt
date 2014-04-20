@@ -1,0 +1,14 @@
+{"item":{"id":"16169522245","type":"file"},"message":"What up, buttercup?","token":null}
+
+
+{"type":"file","id":"16169522245","sequence_id":"4","etag":"4","sha1":"bb4fb7e7fc9962b5045fad4a849a40e5023b1a16","name":"car.jpg","description":"","size":68582,"path_collection":{"total_count":1,"entries":[{"type":"folder","id":"0","sequence_id":null,"etag":null,"name":"All Files"}]},"created_at":"2014-04-12T15:39:56-07:00","modified_at":"2014-04-13T14:25:24-07:00","trashed_at":null,"purged_at":null,"content_created_at":"2013-08-28T16:59:41-07:00","content_modified_at":"2013-08-28T16:59:41-07:00","created_by":{"type":"user","id":"213505951","name":"Jim Ballard","login":"AntlerHorse@gmail.com"},"modified_by":{"type":"user","id":"213505951","name":"Jim Ballard","login":"AntlerHorse@gmail.com"},"owned_by":{"type":"user","id":"213505951","name":"Jim Ballard","login":"AntlerHorse@gmail.com"},"shared_link":{"url":"https:\/\/app.box.com\/s\/94thtgjyl3hel8vzch9x","download_url":"https:\/\/app.box.com\/shared\/static\/94thtgjyl3hel8vzch9x.jpg","vanity_url":null,"is_password_enabled":false,"unshared_at":null,"download_count":0,"preview_count":0,"access":"open","permissions":{"can_download":true,"can_preview":true}},"parent":{"type":"folder","id":"0","sequence_id":null,"etag":null,"name":"All Files"},"item_status":"active"}
+
+
+1864215247
+
+
+{"type":"folder","id":"1864558791","sequence_id":"2","etag":"2","name":"OldName","created_at":"2014-04-19T18:52:49-07:00","modified_at":"2014-04-19T19:07:27-07:00","description":"","size":0,"path_collection":{"total_count":1,"entries":[{"type":"folder","id":"0","sequence_id":null,"etag":null,"name":"All Files"}]},"created_by":{"type":"user","id":"213505951","name":"Jim Ballard","login":"AntlerHorse@gmail.com"},"modified_by":{"type":"user","id":"213505951","name":"Jim Ballard","login":"AntlerHorse@gmail.com"},"trashed_at":null,"purged_at":null,"content_created_at":"2014-04-19T18:52:49-07:00","content_modified_at":"2014-04-19T19:07:27-07:00","owned_by":{"type":"user","id":"213505951","name":"Jim Ballard","login":"AntlerHorse@gmail.com"},"shared_link":null,"folder_upload_email":null,"parent":{"type":"folder","id":"0","sequence_id":null,"etag":null,"name":"All Files"},"item_status":"active","item_collection":{"total_count":0,"entries":[],"offset":0,"limit":100,"order":[{"by":"type","direction":"ASC"},{"by":"name","direction":"ASC"}]}}
+
+
+
+url = https://github.com/gridmaster/BoxManager.git
