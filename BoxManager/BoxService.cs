@@ -65,9 +65,12 @@ namespace BoxManager
 
                     BI.SetRefreshToken(token.refresh_token);
 
-                    var myfold = BI.CreateFolder("MyFolder", "0");
+                    // var myfold = BI.CreateFolder("MyFolder", "0");
 
-                    var mynewfold = BI.RestoreTrashedFolder("MyOtherFolder", "1864215247");
+                    var mynewfold = BI.DeleteFolder("1864215247");
+
+
+                    var bunk = BI.RestoreTrashedFolder("MyOtherFolder", "1864215247");
 
                     var asdf = BI.AddCommentToItem(fileId, "file", "What up, buttercup?");
 

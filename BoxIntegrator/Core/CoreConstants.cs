@@ -53,7 +53,7 @@ namespace BoxIntegrator.Core
         // Example: https://api.box.com/2.0/folders/FOLDER_ID?recursive=true
         public const string UriGetFolders = BaseUri + "/folders/{0}";
         public const string UriUpdateFolders = UriGetFolders;
-        public const string UriDeleteFolders = UriGetFolders;
+        public const string UriDeleteFolders = UriGetFolders + "?recursive=true";
         
         // Create a shared link using UriFolders
         // Example: PUT /folders/{folder id}

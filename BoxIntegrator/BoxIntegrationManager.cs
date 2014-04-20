@@ -119,6 +119,43 @@ namespace BoxIntegrator
             return folderResponseData;
         }
 
+        // Delete a folder
+        // DELETE /folders/{folder id}
+        // Example: https://api.box.com/2.0/folders/FOLDER_ID?recursive=true
+        // Returns: An empty 204 response will be returned upon successful deletion. 
+        //  An error is thrown if the folder is not empty and the ‘recursive’ parameter is not included.
+        public FolderResponseData DeleteFolder(string folderId)
+        {
+            var folderResponseData = new FolderResponseData();
+            string jsonData = string.Empty;
+
+            GetNewToken();
+            
+            try
+            {
+                FolderRequestData folderRequest = new FolderRequestData
+                    {
+                        Id = Convert.ToInt64(folderId),
+                        token = token
+                    };
+
+                string url = String.Format(CoreConstants.UriDeleteFolders, folderId);
+
+                jsonData = Delete(url, folderRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            folderResponseData = DeserializeJson<FolderResponseData>(jsonData);
+
+            return folderResponseData;
+        }
+
         public FileResponseData GetFile(string fileId)
         {
             var fileResponseData = new FileResponseData();
@@ -331,12 +368,49 @@ namespace BoxIntegrator
             return commentResponse;
         }
 
-
-        // public const string UriAddCommentToItem = BaseUri + "/comment";
-
         #endregion Implement IBoxIntegrationManager
 
         #region Private Methods
+
+        private string Delete<T>(string uri, T deleteData) where T : BaseRequestData
+        {
+            string jsonData = string.Empty;
+            try
+            {
+                jsonData = JsonConvert.SerializeObject(deleteData);
+                byte[] requestData = Encoding.UTF8.GetBytes(jsonData);
+
+                WebRequest request = WebRequest.Create(uri);
+                request.Method = "DELETE";
+
+                request.Headers.Add(CoreConstants.authorizationBearer + deleteData.token);
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(requestData, 0, requestData.Length);
+                dataStream.Dispose();
+
+                string jsonResponse = string.Empty;
+                using (WebResponse response = request.GetResponse())
+                {
+                    if (((HttpWebResponse) response).StatusDescription == "No Content")
+                    {
+                        dataStream = response.GetResponseStream();
+                        using (StreamReader reader = new StreamReader(dataStream))
+                        {
+                            jsonResponse = reader.ReadToEnd();
+                        }
+                    }
+                }
+
+                //HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return jsonData;
+        }
+
+
         private string Post<T>(string uri, T postData) where T : BaseRequestData
         {
             string jsonData = string.Empty;
