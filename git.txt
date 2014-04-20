@@ -1,0 +1,299 @@
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git add .
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git commit -m "just checking in a lot of typing, not done yet..."
+[master 3651ecf] just checking in a lot of typing, not done yet...
+ 36 files changed, 355 insertions(+), 52 deletions(-)
+ rewrite BoxHost/bin/Debug/BoxIntegrator.dll (88%)
+ rewrite BoxHost/bin/Debug/BoxIntegrator.pdb (62%)
+ create mode 100644 BoxIntegrator/Core/CoreConstants.cs
+ create mode 100644 BoxIntegrator/Request/FileShareRequestData.cs
+ rewrite BoxIntegrator/bin/Debug/BoxIntegrator.dll (88%)
+ rewrite BoxIntegrator/bin/Debug/BoxIntegrator.pdb (62%)
+ rewrite BoxIntegrator/obj/Debug/BoxIntegrator.dll (88%)
+ rewrite BoxIntegrator/obj/Debug/BoxIntegrator.pdb (62%)
+ rewrite BoxManager/bin/BoxIntegrator.dll (88%)
+ rewrite BoxManager/bin/BoxIntegrator.pdb (62%)
+ rewrite BoxManager/obj/Debug/BoxManager.csprojResolveAssemblyReference.cache (6
+7%)
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git push
+warning: push.default is unset; its implicit value is changing in
+Git 2.0 from 'matching' to 'simple'. To squelch this message
+and maintain the current behavior after the default changes, use:
+
+  git config --global push.default matching
+
+To squelch this message and adopt the new behavior now, use:
+
+  git config --global push.default simple
+
+See 'git help config' and search for 'push.default' for further information.
+(the 'simple' mode was introduced in Git 1.7.11. Use the similar mode
+'current' instead of 'simple' if you sometimes use older versions of Git)
+
+Username for 'https://github.com': gridmaster
+Password for 'https://gridmaster@github.com':
+Counting objects: 87, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (39/39), done.
+Writing objects: 100% (47/47), 36.77 KiB | 0 bytes/s, done.
+Total 47 (delta 32), reused 0 (delta 0)
+To https://github.com/gridmaster/BoxManager.git
+   52c38ca..3651ecf  master -> master
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git add .
+warning: You ran 'git add' with neither '-A (--all)' or '--ignore-removal',
+whose behaviour will change in Git 2.0 with respect to paths you removed.
+Paths like 'BoxIntegrator/obj/Debug/BoxIntegrator.csprojResolveAssemblyReference
+.cache' that are
+removed from your working tree are ignored with this version of Git.
+
+* 'git add --ignore-removal <pathspec>', which is the current default,
+  ignores paths you removed from your working tree.
+
+* 'git add --all <pathspec>' will let you also record the removals.
+
+Run 'git status' to check the paths you removed from your working tree.
+
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git commit -m "last commit before changing WebClient to HttpWebRequest"
+[master 3d26128] last commit before changing WebClient to HttpWebRequest
+ 29 files changed, 126 insertions(+), 19 deletions(-)
+ rewrite BoxHost/bin/Debug/BoxIntegrator.dll (77%)
+ rewrite BoxIntegrator/bin/Debug/BoxIntegrator.dll (77%)
+ rewrite BoxIntegrator/obj/Debug/BoxIntegrator.dll (77%)
+ rewrite BoxManager/bin/BoxIntegrator.dll (77%)
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git push
+warning: push.default is unset; its implicit value is changing in
+Git 2.0 from 'matching' to 'simple'. To squelch this message
+and maintain the current behavior after the default changes, use:
+
+  git config --global push.default matching
+
+To squelch this message and adopt the new behavior now, use:
+
+  git config --global push.default simple
+
+See 'git help config' and search for 'push.default' for further information.
+(the 'simple' mode was introduced in Git 1.7.11. Use the similar mode
+'current' instead of 'simple' if you sometimes use older versions of Git)
+
+Username for 'https://github.com': gridmaster
+Password for 'https://gridmaster@github.com':
+Counting objects: 74, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (30/30), done.
+Writing objects: 100% (38/38), 17.66 KiB | 0 bytes/s, done.
+Total 38 (delta 28), reused 0 (delta 0)
+To https://github.com/gridmaster/BoxManager.git
+   3651ecf..3d26128  master -> master
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git add .
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git commit -m "Added CreateFolder, RestoreTrashedFolder, AddCommentToItem"
+[master 7d7b56a] Added CreateFolder, RestoreTrashedFolder, AddCommentToItem
+ 43 files changed, 395 insertions(+), 34 deletions(-)
+ rewrite BoxHost/bin/Debug/BoxIntegrator.dll (90%)
+ rewrite BoxHost/bin/Debug/BoxIntegrator.pdb (65%)
+ rewrite BoxHost/bin/Debug/BoxManager.dll (83%)
+ create mode 100644 BoxIntegrator/Models/Comment.cs
+ create mode 100644 BoxIntegrator/Models/Item.cs
+ create mode 100644 BoxIntegrator/Request/CommentRequestData.cs
+ create mode 100644 BoxIntegrator/Request/CreateFolderRequestData.cs
+ create mode 100644 BoxIntegrator/Request/RestoreFolderRequestData.cs
+ create mode 100644 BoxIntegrator/Response/BasicResponseData.cs
+ create mode 100644 BoxIntegrator/Response/CommentResponseData.cs
+ rewrite BoxIntegrator/bin/Debug/BoxIntegrator.dll (90%)
+ rewrite BoxIntegrator/bin/Debug/BoxIntegrator.pdb (65%)
+ rewrite BoxIntegrator/obj/Debug/BoxIntegrator.dll (90%)
+ rewrite BoxIntegrator/obj/Debug/BoxIntegrator.pdb (65%)
+ rewrite BoxManager.v11.suo (62%)
+ create mode 100644 BoxManager/Models/Comment.cs
+ create mode 100644 BoxManager/Models/Item.cs
+ rewrite BoxManager/bin/BoxIntegrator.dll (90%)
+ rewrite BoxManager/bin/BoxIntegrator.pdb (65%)
+ rewrite BoxManager/bin/BoxManager.dll (83%)
+ rewrite BoxManager/obj/Debug/BoxManager.dll (83%)
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git push
+warning: push.default is unset; its implicit value is changing in
+Git 2.0 from 'matching' to 'simple'. To squelch this message
+and maintain the current behavior after the default changes, use:
+
+  git config --global push.default matching
+
+To squelch this message and adopt the new behavior now, use:
+
+  git config --global push.default simple
+
+See 'git help config' and search for 'push.default' for further information.
+(the 'simple' mode was introduced in Git 1.7.11. Use the similar mode
+'current' instead of 'simple' if you sometimes use older versions of Git)
+
+Username for 'https://github.com': gridmaster
+Password for 'https://gridmaster@github.com':
+Counting objects: 102, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (49/49), done.
+Writing objects: 100% (57/57), 45.66 KiB | 0 bytes/s, done.
+Total 57 (delta 36), reused 0 (delta 0)
+To https://github.com/gridmaster/BoxManager.git
+   3d26128..7d7b56a  master -> master
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git add .
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git commit -m "added Delete Folder"
+[master c02c8ed] added Delete Folder
+ 24 files changed, 83 insertions(+), 6 deletions(-)
+ rewrite BoxHost/bin/Debug/BoxIntegrator.dll (82%)
+ rewrite BoxIntegrator/bin/Debug/BoxIntegrator.dll (82%)
+ rewrite BoxIntegrator/obj/Debug/BoxIntegrator.dll (82%)
+ rewrite BoxManager/bin/BoxIntegrator.dll (82%)
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git push
+warning: push.default is unset; its implicit value is changing in
+Git 2.0 from 'matching' to 'simple'. To squelch this message
+and maintain the current behavior after the default changes, use:
+
+  git config --global push.default matching
+
+To squelch this message and adopt the new behavior now, use:
+
+  git config --global push.default simple
+
+See 'git help config' and search for 'push.default' for further information.
+(the 'simple' mode was introduced in Git 1.7.11. Use the similar mode
+'current' instead of 'simple' if you sometimes use older versions of Git)
+
+Username for 'https://github.com': gridmaster
+Password for 'https://gridmaster@github.com':
+Counting objects: 56, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (23/23), done.
+Writing objects: 100% (29/29), 25.77 KiB | 0 bytes/s, done.
+Total 29 (delta 21), reused 0 (delta 0)
+To https://github.com/gridmaster/BoxManager.git
+   7d7b56a..c02c8ed  master -> master
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git add .
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git commit -m "UpdateFolder added"
+[master 2a3e012] UpdateFolder added
+ 25 files changed, 188 insertions(+), 113 deletions(-)
+ rewrite BoxHost/bin/Debug/BoxIntegrator.dll (84%)
+ create mode 100644 BoxIntegrator/Request/FolderUpdateData.cs
+ rewrite BoxIntegrator/bin/Debug/BoxIntegrator.dll (84%)
+ rewrite BoxIntegrator/obj/Debug/BoxIntegrator.dll (84%)
+ rewrite BoxManager/bin/BoxIntegrator.dll (84%)
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git push
+warning: push.default is unset; its implicit value is changing in
+Git 2.0 from 'matching' to 'simple'. To squelch this message
+and maintain the current behavior after the default changes, use:
+
+  git config --global push.default matching
+
+To squelch this message and adopt the new behavior now, use:
+
+  git config --global push.default simple
+
+See 'git help config' and search for 'push.default' for further information.
+(the 'simple' mode was introduced in Git 1.7.11. Use the similar mode
+'current' instead of 'simple' if you sometimes use older versions of Git)
+
+Username for 'https://github.com': gridmaster
+Password for 'https://gridmaster@github.com':
+Counting objects: 57, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (25/25), done.
+Writing objects: 100% (30/30), 27.94 KiB | 0 bytes/s, done.
+Total 30 (delta 22), reused 0 (delta 0)
+To https://github.com/gridmaster/BoxManager.git
+   c02c8ed..2a3e012  master -> master
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git add .
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git commit -m "completed folder operations 1st pass"
+[master ccedef4] completed folder operations 1st pass
+ 12 files changed, 464 insertions(+), 70 deletions(-)
+ create mode 100644 BoxIntegrator/Request/CopyFolderRequestData.cs
+ create mode 100644 BoxIntegrator/Request/FolderCollaborationsRequestData.cs
+ create mode 100644 BoxIntegrator/Request/FolderShareRequestData.cs
+ create mode 100644 BoxIntegrator/Request/GetTrashedItemsRequestData.cs
+ create mode 100644 BoxIntegrator/Response/FolderCollaborationsResponseData.cs
+ create mode 100644 BoxIntegrator/Response/GetTrashedItemsResponseData.cs
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git push
+warning: push.default is unset; its implicit value is changing in
+Git 2.0 from 'matching' to 'simple'. To squelch this message
+and maintain the current behavior after the default changes, use:
+
+  git config --global push.default matching
+
+To squelch this message and adopt the new behavior now, use:
+
+  git config --global push.default simple
+
+See 'git help config' and search for 'push.default' for further information.
+(the 'simple' mode was introduced in Git 1.7.11. Use the similar mode
+'current' instead of 'simple' if you sometimes use older versions of Git)
+
+Username for 'https://github.com': gridmaster
+Password for 'https://gridmaster@github.com':
+Counting objects: 32, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (19/19), done.
+Writing objects: 100% (20/20), 8.15 KiB | 0 bytes/s, done.
+Total 20 (delta 10), reused 0 (delta 0)
+To https://github.com/gridmaster/BoxManager.git
+   2a3e012..ccedef4  master -> master
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git add .
+warning: LF will be replaced by CRLF in git help.txt.
+The file will have its original line endings in your working directory.
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git commit -m "added Delete a file"
+[master 271575b] added Delete a file
+warning: LF will be replaced by CRLF in git help.txt.
+The file will have its original line endings in your working directory.
+ 3 files changed, 66 insertions(+), 1 deletion(-)
+ create mode 100644 git help.txt
+
+Jim@SOUL-R /c/projects/boxmanager (master)
+$ git push
+warning: push.default is unset; its implicit value is changing in
+Git 2.0 from 'matching' to 'simple'. To squelch this message
+and maintain the current behavior after the default changes, use:
+
+  git config --global push.default matching
+
+To squelch this message and adopt the new behavior now, use:
+
+  git config --global push.default simple
+
+See 'git help config' and search for 'push.default' for further information.
+(the 'simple' mode was introduced in Git 1.7.11. Use the similar mode
+'current' instead of 'simple' if you sometimes use older versions of Git)
+
