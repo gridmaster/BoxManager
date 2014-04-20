@@ -543,21 +543,20 @@ namespace BoxIntegrator
         // Returns: A full file object is returned 
         public Files UpdateFile(string fileId, string body)
         {
-            string uri = String.Format(CoreConstants.UriGetFile, fileId);
-            Files fileData = new Files();
+            string jsonData = string.Empty;
+            FileResponseData fileData = new FileResponseData();
 
             GetNewToken();
 
             try
             {
-                using (var client = new WebClient())
-                {
-                    client.Headers.Add(CoreConstants.authorizationBearer + token);
-                    client.Headers.Add("Content-Type", CoreConstants.applicationType);
-                    string response = client.UploadString(uri, "PUT", body);
+                FolderUpdateData folderRequestData = DeserializeJson<FolderUpdateData>(body);
 
-                    fileData = JsonConvert.DeserializeObject<Files>(response);
-                }
+                folderRequestData.token = token;
+
+                string url = String.Format(CoreConstants.UriUpdateFile, fileId);
+
+                jsonData = Put(url, folderRequestData);
             }
             catch (Exception ex)
             {
@@ -566,8 +565,71 @@ namespace BoxIntegrator
                                   ex.Message, ex.InnerException));
             }
 
+            fileData = JsonConvert.DeserializeObject<FileResponseData>(jsonData);
+
             return fileData;
         }
+
+        // Download a file
+        // URL Parameters: version
+        // Example: GET /files/{file id}/content
+        // Response is 302 if found, 202 if accepted but not available and a Ready-After header
+        // public const string UriFilesContent = UriGetFile + "/content"; // POST
+        // Returns: If the file is available to be downloaded, the response will be a 302 Found to a URL at dl.boxcloud.com. 
+        //  The dl.boxcloud.com URL is not persistent. Clients will need to follow the redirect in order to actually download 
+        //  the file. The raw data of the file is returned unless the file ID is invalid or the user does not have access to it.
+        //  If the file is not ready to be downloaded (i.e. in the case where the file was uploaded immediately before the 
+        //  download request), a response with an HTTP status of 202 Accepted will be returned with a Retry-After header indicating 
+        //  the time in seconds after which the file will be available for the client to download.
+        // Response: Raw text of a text file 
+        public byte[] DownloadFile(string fileId)
+        {
+            string jsonData = string.Empty;
+
+            GetNewToken();
+
+            try
+            {
+                FileRequestData fileRequest = new FileRequestData
+                {
+                    Id = Convert.ToInt64(fileId),
+                    token = token
+                };
+
+                string url = String.Format(CoreConstants.UriFilesContent, fileId);
+
+                jsonData = Get(url, fileRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    string.Format("Error occured in Box Intigration code getting a file. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+
+            byte[] requestData = Encoding.UTF8.GetBytes(jsonData);
+
+            return requestData;
+        }
+
+        // Upload a file
+        // Example: POST https://upload.box.com/api/2.0/files/content
+        //      or: https://upload.box.com/api/2.0/files/content -H "Authorization: Bearer ACCESS_TOKEN" 
+        //                  -F filename=@FILE_NAME -F parent_id=PARENT_FOLDER_ID
+        // Headers: Content-MD5 (The SHA1 hash of the file)
+        // Form Elements:
+        // Required: filename, parent_id
+        // Optional: content_created_at, content_modified_at
+        // Returns: A full file object is returned inside of a collection
+        // public const string UriUploadFile = UriUpload + "/files/content"; // POST
+        public FileUploadResponseData UploadFile(string fileName, string parentId)
+        {
+            FileUploadResponseData fileUploadResponseData = new FileUploadResponseData();
+
+            return fileUploadResponseData;
+        }
+
 
         // Delete a file
         // Headers: If-Match the etag of the file
@@ -576,6 +638,7 @@ namespace BoxIntegrator
         //      or: ttps://api.box.com/2.0/files/FILE_ID -H "Authorization: Bearer ACCESS_TOKEN" 
         //                  -H "If-Match: a_unique_value"
         // public const string UriDeleteFile = UriGetFile;
+        // Returns: a 204 if successful. 
         public string DeleteFile(string fileId)
         {
             string jsonData = string.Empty;
@@ -605,6 +668,16 @@ namespace BoxIntegrator
             return "success";
         }
 
+
+
+        // Create a shared link using UriFiles
+        // Example: PUT /files/{files id}
+        //      or: https://api.box.com/2.0/files/FILE_ID -H "Authorization: Bearer ACCESS_TOKEN" 
+        //              -d '{"shared_link": {"access": "open"}}' 
+        // Request body attributes:
+        // shared_link, shared_link.access, shared_link.unshared_at, shared_link.permissions
+        // shared_link.permissions.can_download, shared_link.permissions.can_preview
+        // Returns a full file object
         public FileResponseData CreateFileShare(string fileId, string fileShareType)
         {
             string body = string.Format(CoreConstants.sharedLink, fileShareType);

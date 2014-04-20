@@ -21,6 +21,7 @@ namespace BoxIntegrator.Interfaces
         
         FileResponseData GetFile(string fileId);
         Files UpdateFile(string fileId, string body);
+        byte[] DownloadFile(string fileId);
         CommentResponseData AddCommentToItem(string fileId, string itemType, string message);
 
         Folder ListAllFiles(string folderId);
