@@ -20,8 +20,10 @@ namespace BoxIntegrator.Interfaces
         GetTrashedItemsResponseData GetItemsFromTrash();
         
         FileResponseData GetFile(string fileId);
-        Files UpdateFile(string fileId, string body);
+        FileResponseData UpdateFile(string fileId, string body);
         byte[] DownloadFile(string fileId);
+        FileUploadResponseData UploadFile(string fileName, long parentId);
+
         CommentResponseData AddCommentToItem(string fileId, string itemType, string message);
 
         Folder ListAllFiles(string folderId);

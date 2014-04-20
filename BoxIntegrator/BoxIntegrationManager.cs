@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using BoxIntegrator.Core;
 using BoxIntegrator.Interfaces;
@@ -287,7 +288,7 @@ namespace BoxIntegrator
             {
                 FolderShareRequestData folderRequest = new FolderShareRequestData
                 {
-                    Body = string.Format(CoreConstants.sharedLink, folderShareType)
+                    Body = "{\"shared_link\": {\"access\": \"open\"}}" // string.Format(CoreConstants.sharedLink, folderShareType)
                 };
                 string uri = string.Format(CoreConstants.UriGetFolders, folderId);
 
@@ -541,7 +542,7 @@ namespace BoxIntegrator
         //       shared_link.permissions, shared_link.permissions.download, shared_link.permissions.preview, tags
         // public const string UriUpdateFile = UriGetFile;
         // Returns: A full file object is returned 
-        public Files UpdateFile(string fileId, string body)
+        public FileResponseData UpdateFile(string fileId, string body)
         {
             string jsonData = string.Empty;
             FileResponseData fileData = new FileResponseData();
@@ -623,13 +624,78 @@ namespace BoxIntegrator
         // Optional: content_created_at, content_modified_at
         // Returns: A full file object is returned inside of a collection
         // public const string UriUploadFile = UriUpload + "/files/content"; // POST
-        public FileUploadResponseData UploadFile(string fileName, string parentId)
+        public FileUploadResponseData UploadFile(string fileName, long parentId)
         {
             FileUploadResponseData fileUploadResponseData = new FileUploadResponseData();
+            string jsonData = string.Empty;
 
+            GetNewToken();
+
+            try
+            {
+                FileUpdloadRequestData fileUpdloadRequestData = new FileUpdloadRequestData
+                    {
+                        parentId = parentId,
+                        fileName = fileName,
+                        content_created_at = DateTime.Now,
+                        content_modified_at = DateTime.Now,
+                        token = token
+                    };
+                
+                jsonData = Post(CoreConstants.UriUploadFile, fileUpdloadRequestData);
+            }
+            catch (Exception ex)
+            {
+                                throw new Exception(
+                    string.Format("Error occured in Box Intigration code creating a folder. Error returned: {0} :: {1}",
+                                  ex.Message, ex.InnerException));
+            }
+            fileUploadResponseData = DeserializeJson<FileUploadResponseData>(jsonData);
             return fileUploadResponseData;
         }
 
+        public void BubFlub()
+        {
+
+            GetNewToken();
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    using (var multipartFormDataContent = new MultipartFormDataContent())
+                    {
+                        var values = new[]
+                            {
+                                new KeyValuePair<string, string>("ParentId", "0"),
+                                new KeyValuePair<string, string>("fileName", "git.txt"),
+                                new KeyValuePair<string, string>("token", token)
+                                 //other values
+                            };
+
+                        foreach (var keyValuePair in values)
+                        {
+                            multipartFormDataContent.Add(new StringContent(keyValuePair.Value),
+                                String.Format("\"{0}\"", keyValuePair.Key));
+                        }
+
+                        //multipartFormDataContent.Add(new ByteArrayContent(File.ReadAllBytes("test.txt")),
+                        //    '"' + "File" + '"',
+                        //    '"' + "test.txt" + '"');
+                        multipartFormDataContent.Add(new ByteArrayContent(File.ReadAllBytes(@"C:\Projects\BoxManager\git.txt")),
+                            '"' + "File" + '"',
+                            '"' + "test.txt" + '"');
+
+                        var requestUri = CoreConstants.UriUploadFile; //  "http://localhost:5949";
+                        var result = client.PostAsync(requestUri, multipartFormDataContent).Result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         // Delete a file
         // Headers: If-Match the etag of the file

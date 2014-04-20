@@ -65,6 +65,12 @@ namespace BoxManager
 
                     BI.SetRefreshToken(token.refresh_token);
 
+                    var buoo = BI.CreateFolderShare("0", "Open");
+
+                    BI.BubFlub();
+
+                    var booboo = BI.UploadFile("git.txt", 0); // @"C:\Projects\BoxManager\git.txt", 0);
+
                     var myfold = BI.CreateFolder("MyFolder", "0");
 
                     var t1 = BI.UpdateFolder("1864558791", "{\"name\":\"OldName\"}");

@@ -23,7 +23,7 @@ namespace BoxIntegrator.Response
         public DateTime? content_created_at { get; set; }
         public DateTime? content_modified_at { get; set; }
         public Entry owned_by { get; set; }
-        public string sared_link { get; set; }
+        public string shared_link { get; set; }
         public string folder_upload_email { get; set; }
         public Entry parent { get; set; }
         public string item_status { get; set; }
